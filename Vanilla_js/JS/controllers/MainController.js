@@ -26,8 +26,8 @@ export default {
     console.log(tag,'renderView()',this.selectedMenu)
     MenuView.setActiveMenu(this.selectedMenu)
     if (this.selectedMenu === 'MAINPAGE'){
-      console.log('fetchmainpage')
-    } if (this.selectedMenu === 'ROUTINE'){
+      console.log('fetchMAINPAGE')
+    } else if (this.selectedMenu === 'ROUTINE'){
       console.log('fetchROUTINE')
     } else {
       console.log('fetchCALENDER')
@@ -35,7 +35,7 @@ export default {
   },
 
   onChangeMenu(menuName) {
-    console.log(tag,'onChangeMenu',menuName)
+    console.log(tag,'onChangeMenu()',menuName)
     this.selectedMenu = menuName
     this.renderView()
   }

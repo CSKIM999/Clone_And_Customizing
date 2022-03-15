@@ -77,7 +77,11 @@ header .timer {
     padding: 5px;
     font-size: 2vh;
 }
-
+.bottom_menu .active {
+    color: pink;
+    background-color: black;
+    border-radius: 20px;
+}
 .routine_start::before{
     content: 'START';
 }

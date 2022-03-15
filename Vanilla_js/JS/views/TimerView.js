@@ -5,7 +5,7 @@ const tag = '[Timerview]'
 const TimerView = Object.create(View)
 
 TimerView.setup = function(el) {
-  console.log(tag,'setup()',el)
+  console.log(tag,'setup()')
   this.init(el)
   this.show()
   this.setTimer(el)
@@ -19,7 +19,7 @@ TimerView.setup = function(el) {
 TimerView.setTimer = function(el) {
   var time = 0
   var timer
-  console.log(tag,'startTimer',el)
+  console.log(tag,'startTimer' )
   const tictok = () => {
     time += 1
     el.innerHTML = time
