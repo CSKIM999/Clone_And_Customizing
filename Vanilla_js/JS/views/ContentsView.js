@@ -24,8 +24,9 @@ ContentsView.render = function(data = []) {
 }
 
 ContentsView.getContentHtml = function(data) {
-  return data.reduce((html, item, index) => {
-    html += `<li data-keyword="${index}" class = "routine"><div id = "routine_text">${item.name}</div>
+  return data.reduce((html, item, index) => { 
+    html += `<li data-keyword="${index}" id = "routine_contents"><div id = "routine_text">${item.name}
+    <div id = "routine_count">${Object.keys(item.detail[0]).length} Workouts</div></div>
     <ul id = "routine_btns"><li class="routine_remove">RM</li>
     <li class="routine_adjust">ADJ</li>
     <li class="routine_start"></li></ul></li>`
@@ -35,15 +36,28 @@ ContentsView.getContentHtml = function(data) {
 }
 
 ContentsView.bindClickEvent = function() {
-  Array.from(this.el.querySelectorAll('li #routine_btns')).forEach(li => {
-    li.addEventListener('click', e => this.onClickContent(e))
+  Array.from(this.el.querySelectorAll('li .routine_remove')).forEach(li => {
+    li.addEventListener('click', e => this.onRemoveContents(li.parentElement.parentElement))
+  })
+  Array.from(this.el.querySelectorAll('li .routine_adjust')).forEach(li => {
+    li.addEventListener('click', e => this.onAdjustContent(li.parentElement.parentElement))
+  })
+  Array.from(this.el.querySelectorAll('li .routine_start')).forEach(li => {
+    li.addEventListener('click', e => this.onStartContents(li.parentElement.parentElement))
   })
 }
 
-ContentsView.onClickContent = function(e) {
-  console.log(tag,'onClickContent()',e)
-  const {content} = e.target
-  this.emit('@click', {content})
+ContentsView.onRemoveContents = function(e) {
+  const {keyword} = e.dataset
+  this.emit('@remove', {keyword})
+}
+ContentsView.onAdjustContent = function(e) {
+  const {keyword} = e.dataset
+  this.emit('@adjust', {keyword})
+}
+ContentsView.onStartContents = function(e) {
+  const {keyword} = e.dataset
+  this.emit('@start', {keyword})
 }
 
 

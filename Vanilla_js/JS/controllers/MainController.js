@@ -13,8 +13,13 @@ export default {
     TimerView.setup(document.querySelector('.timer'))
 
     ContentsView.setup(document.querySelector('.contents'))
-
-    RoutineView.setup(document.querySelector('.routines'))
+      .on('@start', e=> this.onStart(e.detail.keyword))
+      .on('@remove', e=> this.onRemove(e.detail.keyword))
+      .on('@adjust', e=> this.onAdjust(e.detail.keyword))
+    RoutineView.setup(document.querySelector('#routines_contents'))
+      .on('@start', e=> this.onStart(e.detail.keyword))
+      .on('@remove', e=> this.onRemove(e.detail.keyword))
+      .on('@adjust', e=> this.onAdjust(e.detail.keyword))
     // RoutineView
 
     MenuView.setup(document.querySelector('.bottom_menu'))
@@ -57,7 +62,18 @@ export default {
       ContentsView.hide()
       TimerView.hide()
       RoutineView.show()
-      
+      RoutineView.render(data)
+
     })
+  },
+
+  onAdjust(keyword){
+    console.log(tag,'onAdjust()',keyword)
+  },
+  onStart(keyword){
+    console.log(tag,'onStart()',keyword)
+  },
+  onRemove(keyword){
+    console.log(tag,'onRemove()',keyword)
   }
 }

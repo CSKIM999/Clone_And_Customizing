@@ -1,6 +1,6 @@
 export default {
   data: [
-    {name:'R1' , detail:[{'e1':4, 'e2':4}]},
+    {name:'R1' , detail:[{'e1':4, 'e2':4,'e3':3}]},
     {name:'R2' , detail:[{'e1':4, 'e2':4}]},
     {name:'R2' , detail:[{'e1':4, 'e2':4}]},
     {name:'R2' , detail:[{'e1':4, 'e2':4}]},
