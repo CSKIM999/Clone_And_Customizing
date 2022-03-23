@@ -16,17 +16,29 @@ RoutineView.setup = function(el) {
 }
 
 RoutineView.render = function(data = []) {
-  this.el.innerHTML = data.length ? this.getRoutineHtml(data) : this.message.NO_ROUTINE
+  // console.log(tag,this.el.innerHTML)
+  this.el.innerHTML = data.length ? this.getRoutineHtml(data) : this.noData()
   this.bindClickEvent()
   this.show()
 
   return this
 }
 
+RoutineView.noData = function() {
+  return "<div class ='routines' id = 'routines_header'>"
+  +"<ul><li><span id = 'add_routine'>루틴추가</span></li>"
+  +"<li>My-Routines</li></ul></div>"
+  +"<ul id = 'routine_contents_margin'>" 
+  + "<div class = 'noRoutine' >아직 루틴이 없습니다 루틴을 추가해보세요!</div>"
+  + "<span class = 'noRoutine' id = 'add_routine'>루틴 추가 +</span>"
+  + '</ul.>'
+}
+
 RoutineView.getRoutineHtml = function(data) {
   return data.reduce((html, item, index) => { 
     html += `<li data-keyword="${index}" id = "routine_contents"><div id = "routine_text">${item.name}
     <div id = "routine_count">${Object.keys(item.detail[0]).length} Workouts</div></div>
+    <div class ='none' id = 'routine_detail'>Routine Detail</div>
     <ul id = "routine_btns"><li class="routine_remove">RM</li>
     <li class="routine_adjust">ADJ</li>
     <li class="routine_start"></li></ul></li>`
@@ -36,6 +48,13 @@ RoutineView.getRoutineHtml = function(data) {
   +"<li>My-Routines</li></ul></div>"
   +"<ul id = 'routine_contents_margin'>") + '</ul.>'
 }
+RoutineView.activeRoutineDetail = function(routineIndex) {
+  this.show()
+  Array.from(this.el.querySelectorAll('#routine_detail')).forEach(li =>{
+    li.parentElement.dataset['keyword'] == routineIndex ? (li.className == 'none' ? li.className = 'detail' : li.className = 'none') : false
+  })
+}
+
 
 RoutineView.bindClickEvent = function() {
   Array.from(this.el.querySelectorAll('li .routine_remove')).forEach(li => {
@@ -47,7 +66,15 @@ RoutineView.bindClickEvent = function() {
   Array.from(this.el.querySelectorAll('li .routine_start')).forEach(li => {
     li.addEventListener('click', e => this.onStartRoutines(li.parentElement.parentElement))
   })
+  Array.from(this.el.querySelectorAll('#add_routine')).forEach(span => {
+    span.addEventListener('click', e => this.onAddRoutines(span.parentElement.parentElement))
+  })
+  Array.from(this.el.querySelectorAll('#routine_contents')).forEach(li => {
+    li.addEventListener('click', e => this.onClick(li))
+  })
 }
+
+
 
 RoutineView.onRemoveRoutines = function(e) {
   const {keyword} = e.dataset
@@ -61,6 +88,15 @@ RoutineView.onStartRoutines = function(e) {
   const {keyword} = e.dataset
   this.emit('@start', {keyword})
 }
+RoutineView.onAddRoutines = function(e) {
+  console.log(e)
+  const {keyword} = e.dataset
+}
+RoutineView.onClick = function(e){
+  const {keyword} = e.dataset
+  this.activeRoutineDetail(keyword)
+}
+
 
 
 export default RoutineView

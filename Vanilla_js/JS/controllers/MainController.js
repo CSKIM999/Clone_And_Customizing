@@ -2,6 +2,7 @@ import TimerView from "../views/TimerView.js"
 import ContentsView from "../views/ContentsView.js"
 import RoutineView from "../views/RoutineView.js"
 import MenuView from "../views/MenuView.js"
+import SettingView from "../views/SettingView.js"
 
 import RoutineModel from "../models/RoutineModel.js"
 
@@ -24,6 +25,8 @@ export default {
 
     MenuView.setup(document.querySelector('.bottom_menu'))
       .on('@change' , e=> this.onChangeMenu(e.detail.menuName))
+
+    SettingView.setup(document.querySelector('#setting'))
 
     this.selectedMenu = 'MAINPAGE'
     this.renderView()
@@ -66,6 +69,10 @@ export default {
 
     })
   },
+  fetchSetting(){
+    
+  },
+
 
   onAdjust(keyword){
     console.log(tag,'onAdjust()',keyword)

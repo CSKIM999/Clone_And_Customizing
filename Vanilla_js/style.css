@@ -28,6 +28,12 @@ header .timer {
     text-align: center;
     padding-bottom: 2vh;
 }
+.none {
+    display: none;
+}
+.detail {
+    display: "";
+}
 #routines_header{
     top: 0;
     position: fixed;

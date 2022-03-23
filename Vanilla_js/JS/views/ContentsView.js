@@ -12,7 +12,7 @@ ContentsView.setup = function(el) {
   // console.log(tag,'setup()')
   this.init(el)
   this.show()
-
+  
   return this
 }
 
@@ -27,6 +27,7 @@ ContentsView.getContentHtml = function(data) {
   return data.reduce((html, item, index) => { 
     html += `<li data-keyword="${index}" id = "routine_contents"><div id = "routine_text">${item.name}
     <div id = "routine_count">${Object.keys(item.detail[0]).length} Workouts</div></div>
+    <div class ='none' id = 'routine_detail'>Routine Detail</div>
     <ul id = "routine_btns"><li class="routine_remove">RM</li>
     <li class="routine_adjust">ADJ</li>
     <li class="routine_start"></li></ul></li>`
@@ -45,7 +46,18 @@ ContentsView.bindClickEvent = function() {
   Array.from(this.el.querySelectorAll('li .routine_start')).forEach(li => {
     li.addEventListener('click', e => this.onStartContents(li.parentElement.parentElement))
   })
+  Array.from(this.el.querySelectorAll('#routine_contents')).forEach(li => {
+    li.addEventListener('click', e => this.onClick(li))
+  })
 }
+ContentsView.activeRoutineDetail = function(routineIndex){
+  this.show()
+  Array.from(this.el.querySelectorAll('#routine_detail')).forEach(li =>{
+    li.parentElement.dataset['keyword'] == routineIndex ? (li.className == 'none' ? li.className = 'detail' : li.className = 'none') : false
+  })
+}
+
+
 
 ContentsView.onRemoveContents = function(e) {
   const {keyword} = e.dataset
@@ -59,6 +71,9 @@ ContentsView.onStartContents = function(e) {
   const {keyword} = e.dataset
   this.emit('@start', {keyword})
 }
-
+ContentsView.onClick = function(e){
+  const {keyword} = e.dataset
+  this.activeRoutineDetail(keyword)
+}
 
 export default ContentsView
