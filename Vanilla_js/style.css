@@ -34,6 +34,15 @@ header .timer {
 .detail {
     display: "";
 }
+#routine_detail {
+    padding: 1vh;
+}
+#routine_detail ul {
+    list-style: none;
+}
+#routine_detail li {
+    padding-top: .5vh;
+}
 #routines_header{
     top: 0;
     position: fixed;
@@ -84,13 +93,7 @@ header .timer {
     display: flex;
     justify-content: space-between;
 }
-/* .routine {
-    margin: 2vh;
-    border: 1px solid;
-    border-radius: 20px;
-    padding: 2vh;
-    list-style: none;
-} */
+
 #routine_btns {
     margin: 1vh;
     display: flex;
@@ -110,7 +113,17 @@ header .timer {
     padding-top: 11vh;
 }
 
+#setting_header {
+    display: flex;
+    list-style: none;
+    width: 100%;
+    background-color: cornflowerblue;
+}
 
+#setting_header li{
+    flex : 1;
+    padding: 2vh;
+}
 
 .bottom_menu{
     padding-bottom: 1em;

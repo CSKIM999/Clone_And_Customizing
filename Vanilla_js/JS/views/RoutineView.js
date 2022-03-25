@@ -37,8 +37,8 @@ RoutineView.noData = function() {
 RoutineView.getRoutineHtml = function(data) {
   return data.reduce((html, item, index) => { 
     html += `<li data-keyword="${index}" id = "routine_contents"><div id = "routine_text">${item.name}
-    <div id = "routine_count">${Object.keys(item.detail[0]).length} Workouts</div></div>
-    <div class ='none' id = 'routine_detail'>Routine Detail</div>
+    <div id = "routine_count">${Object.keys(item.detail).length} Workouts</div></div>
+    <div class ='none' id = 'routine_detail'>Routine Detail${this.spreadItem(item)}</div>
     <ul id = "routine_btns"><li class="routine_remove">RM</li>
     <li class="routine_adjust">ADJ</li>
     <li class="routine_start"></li></ul></li>`
@@ -48,6 +48,14 @@ RoutineView.getRoutineHtml = function(data) {
   +"<li>My-Routines</li></ul></div>"
   +"<ul id = 'routine_contents_margin'>") + '</ul.>'
 }
+RoutineView.spreadItem = function(data = []){
+  return Object.entries(data.detail).reduce((html,item) => {
+    html += `<li>${item[0]}&nbsp;&nbsp;${item[1].length}SET</li>`
+    return html
+  },'<ul>')+'</ul>'
+}
+
+
 RoutineView.activeRoutineDetail = function(routineIndex) {
   this.show()
   Array.from(this.el.querySelectorAll('#routine_detail')).forEach(li =>{
@@ -67,10 +75,13 @@ RoutineView.bindClickEvent = function() {
     li.addEventListener('click', e => this.onStartRoutines(li.parentElement.parentElement))
   })
   Array.from(this.el.querySelectorAll('#add_routine')).forEach(span => {
-    span.addEventListener('click', e => this.onAddRoutines(span.parentElement.parentElement))
+    span.addEventListener('click', e => this.onAddRoutine(span.parentElement.parentElement))
   })
-  Array.from(this.el.querySelectorAll('#routine_contents')).forEach(li => {
-    li.addEventListener('click', e => this.onClick(li))
+  // Array.from(this.el.querySelectorAll('#routine_contents')).forEach(li => {
+  //   li.addEventListener('click', e => this.onClick(li))
+  // })
+  Array.from(this.el.querySelectorAll('#routine_text')).forEach(div => {
+    div.addEventListener('click', e => this.onClick(div.parentElement))
   })
 }
 
@@ -88,9 +99,8 @@ RoutineView.onStartRoutines = function(e) {
   const {keyword} = e.dataset
   this.emit('@start', {keyword})
 }
-RoutineView.onAddRoutines = function(e) {
-  console.log(e)
-  const {keyword} = e.dataset
+RoutineView.onAddRoutine = function(e) {
+  this.emit('@set','new')
 }
 RoutineView.onClick = function(e){
   const {keyword} = e.dataset

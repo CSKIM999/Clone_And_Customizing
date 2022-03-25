@@ -12,7 +12,8 @@ export default {
   init() {
     console.log(tag,'init()')
     TimerView.setup(document.querySelector('.timer'))
-
+    SettingView.setup(document.querySelector('#setting'))
+      .on('@cancel', e=>this.renderView())
     ContentsView.setup(document.querySelector('.contents'))
       .on('@start', e=> this.onStart(e.detail.keyword))
       .on('@remove', e=> this.onRemove(e.detail.keyword))
@@ -21,19 +22,19 @@ export default {
       .on('@start', e=> this.onStart(e.detail.keyword))
       .on('@remove', e=> this.onRemove(e.detail.keyword))
       .on('@adjust', e=> this.onAdjust(e.detail.keyword))
+      .on('@set', e=>this.fetchSetting(e.detail))
     // RoutineView
 
     MenuView.setup(document.querySelector('.bottom_menu'))
       .on('@change' , e=> this.onChangeMenu(e.detail.menuName))
 
-    SettingView.setup(document.querySelector('#setting'))
 
     this.selectedMenu = 'MAINPAGE'
     this.renderView()
   },
 
   renderView(){
-    // console.log(tag,'renderView()',this.selectedMenu)
+    console.log(tag,'renderView()',this.selectedMenu)
     MenuView.setActiveMenu(this.selectedMenu)
     if (this.selectedMenu === 'MAINPAGE'){
       console.log('fetchContent')
@@ -54,6 +55,7 @@ export default {
   fetchContent(){
     RoutineModel.list().then(data => {
       RoutineView.hide()
+      SettingView.hide()
       TimerView.show()
       ContentsView.show()
       ContentsView.render(data)
@@ -63,19 +65,27 @@ export default {
   fetchRoutine(){
     RoutineModel.list().then(data =>{
       ContentsView.hide()
+      SettingView.hide()
       TimerView.hide()
       RoutineView.show()
       RoutineView.render(data)
 
     })
   },
-  fetchSetting(){
-    
+  fetchSetting(data){
+    ContentsView.hide()
+    TimerView.hide()
+    RoutineView.hide()
+    SettingView.show()
+    SettingView.render(data)
   },
 
 
   onAdjust(keyword){
-    console.log(tag,'onAdjust()',keyword)
+    console.log(tag,'onAdjust()',keyword,RoutineModel.data[keyword])
+    this.fetchSetting(RoutineModel.data)
+    // todo....
+    // Routinemodel.data[keyword] 던져줄 것  {name:'R1',detail:{[asf]}}
   },
   onStart(keyword){
     console.log(tag,'onStart()',keyword)
