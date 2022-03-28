@@ -24,7 +24,6 @@ ContentsView.render = function(data = []) {
 }
 
 ContentsView.getContentHtml = function(data) {
-  debugger
   return data.reduce((html, item, index) => {
     html += `<li data-keyword="${index}" id = "routine_contents"><div id = "routine_text">${item.name}
     <div id = "routine_count">${Object.keys(item.detail).length} Workouts</div></div>
@@ -56,8 +55,8 @@ ContentsView.bindClickEvent = function() {
   Array.from(this.el.querySelectorAll('li .routine_start')).forEach(li => {
     li.addEventListener('click', e => this.onStartContents(li.parentElement.parentElement))
   })
-  Array.from(this.el.querySelectorAll('#routine_contents')).forEach(li => {
-    li.addEventListener('click', e => this.onClick(li))
+  Array.from(this.el.querySelectorAll('#routine_text')).forEach(div => {
+    div.addEventListener('click', e => this.onClick(div.parentElement))
   })
 }
 ContentsView.activeRoutineDetail = function(e){

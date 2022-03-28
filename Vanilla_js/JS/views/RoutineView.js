@@ -9,7 +9,6 @@ RoutineView.message = {
 }
 
 RoutineView.setup = function(el) {
-  console.log(tag,'setup()',el)
   this.init(el)
 
   return this
@@ -100,7 +99,8 @@ RoutineView.onStartRoutines = function(e) {
   this.emit('@start', {keyword})
 }
 RoutineView.onAddRoutine = function(e) {
-  this.emit('@set','new')
+  const newRoutine =  {name:'',detail:{}}
+  this.emit('@add',newRoutine)
 }
 RoutineView.onClick = function(e){
   const {keyword} = e.dataset

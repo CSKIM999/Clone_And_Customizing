@@ -120,10 +120,39 @@ header .timer {
     background-color: cornflowerblue;
 }
 
+#detail_body {
+    width: fit-content;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
 #setting_header li{
     flex : 1;
     padding: 2vh;
 }
+
+
+
+#detailToggle {
+    list-style-type: none;
+    text-align: center;
+}
+#detailToggle span{
+    margin: 2vh;
+    border: 1px solid cornflowerblue;
+}
+#detailToggle .on {
+    background-color: black;
+    color: pink;
+}
+
+
+#spreadDetail {
+    display: flex;
+    text-align: center;
+}
+
 
 .bottom_menu{
     padding-bottom: 1em;
