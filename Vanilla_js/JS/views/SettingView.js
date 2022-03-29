@@ -53,7 +53,6 @@ SettingView.bindClickEvent = function(data) {
 
 
 SettingView.onAddWorkout = function(e) {
-  // todo... maincontroller 에 addevent throw
   this.emit('@addWorkout',e)
 }
 

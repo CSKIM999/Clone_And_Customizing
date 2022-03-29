@@ -148,7 +148,7 @@ header .timer {
 }
 
 
-#spreadDetail {
+.spreadDetail {
     display: flex;
     text-align: center;
 }

@@ -7,15 +7,17 @@ const DetailView = Object.create(View)
 DetailView.template ={
   Basic : `<ul id = "setting_header"><li id ='setting_cancel' style="text-align: left;"><<</li><li style="text-align: center;"></li><li id = 'setting_save'style="text-align: right;">Save</li></ul>
   <div id = "detail_body">
-  <div><span>WorkOut Name</span><br><input type=text placeholder="운동 이름을 적어주세요"></div>
+  <div><span>WorkOut Name</span><br><input id = "detailName" type=text placeholder="운동 이름을 적어주세요"></div>
   <div>세트수와 세트별 개수 및 무게를 알려주세요</div>
   <ul id = "detailToggle">
-  <li><input type="number" min="1" max="100"> SET</li>
+  <li><input id='setCount' value = 1 type="number" min="1" max="100"> SET</li>
   <li class = 'toggleTop'><span class="on">W,C</span><span class="off">Only C</span><span class="off">Only T</span></li>
   <li class = 'toggleBottom'><span class="on">SAME ALL</span><span class="off">EACH</span></li>
   </ul>
-  <div id="spreadDetail">
-  <input  type="number"><input type="number" min="0" max="100"><div><button>+5</button><button>-5</button><br><button>+1</button><button>-1</button></div></li>
+  <div>
+  <div class ='spreadDetail' id="spreadDetailHead">
+  <input class= "weight" type="number"><input class = "count" type="number" min="0" max="100"><div><button>+5</button><button>-5</button><br><button>+1</button><button>-1</button></div></li>
+  </div>
   </div>
   </div>
   `
@@ -32,11 +34,22 @@ DetailView.setup = function(el) {
   return this
 }
 
+DetailView.setDataType = function(data) {
+  const RB = [... new Array(2)].map(()=>[])
+  RB[0].push(this.selectedToggletop)
+  RB[0].push(this.selectedToggleBottom)
+  data.detail = RB
+}
+
 DetailView.render = function(data=[]) {
-  this.el.innerHTML = Object.keys(data.detail).length == 0 ? this.template.Basic: this.template.Setting + this.getDetailHtml(data)
+  if (Object.keys(data.detail).length == 0) {
+    this.el.innerHTML = this.template.Basic
+    this.setDataType(data)
+  } else {
+    this.el.innerHTML =this.template.Setting + this.getDetailHtml(data)
+  }
   this.bindClickEvent(data)
   this.show()
-
   return this
 }
 
@@ -52,13 +65,16 @@ DetailView.spreadManual = function(data = []){
 
 DetailView.bindClickEvent = function(data) {
   console.log(tag,"bindClickEvent()")
+  this.el.querySelector('#detailName').addEventListener('change',e=> data.name= e.currentTarget.value)
   this.el.querySelector('#setting_cancel').addEventListener('click', e=> this.onCancel(e))
   this.el.querySelector('#setting_save').addEventListener('click', e=> this.onSave(data))
+  // 세트수 str return 
+  this.el.querySelector('#setCount').addEventListener('change', e=> this.onSave(e.currentTarget.value))
   Array.from(this.el.querySelectorAll('.toggleTop span')).forEach(span => {
-    span.addEventListener('click', e => this.onChangeToggleTop(span))
+    span.addEventListener('click', e => this.onChangeToggleTop(span.innerHTML,data))
   })
   Array.from(this.el.querySelectorAll('.toggleBottom span')).forEach(span => {
-    span.addEventListener('click', e => this.onChangeToggleBottom(span))
+    span.addEventListener('click', e => this.onChangeToggleBottom(span.innerHTML,data))
   })
 }
 
@@ -73,25 +89,28 @@ DetailView.setActiveToggle = function() {
 }
 
 
-DetailView.onChangeToggleTop = function(e) {
+DetailView.onChangeToggleTop = function(e,data) {
   console.log(tag,'onChangeToggle()',e)
-  this.selectedToggletop = e.innerHTML
+  this.selectedToggletop = e
+  data.detail[0][0] = e
+  debugger
   this.setActiveToggle()
 }
-DetailView.onChangeToggleBottom = function(e) {
+DetailView.onChangeToggleBottom = function(e,data) {
   console.log(tag,'onChangeToggle()',e)
-  this.selectedToggleBottom = e.innerHTML
+  this.selectedToggleBottom = e
+  data.detail[0][1] = e
+  debugger
   this.setActiveToggle()
 }
-
 
 DetailView.onCancel = function() {
   console.log(tag,'onCancel()')
 
 }
 
-DetailView.onSave = function(data) {
-  console.log(tag,'onSave()',data)
+DetailView.onSave = function(e) {
+  console.log(tag,'onSave()',e)
 }
 
 
