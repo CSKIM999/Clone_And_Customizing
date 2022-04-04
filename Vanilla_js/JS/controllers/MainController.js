@@ -20,7 +20,8 @@ export default {
     .on('@start', e=> this.onStart(e.detail.keyword))
     .on('@remove', e=> this.onRemove(e.detail.keyword))
     .on('@adjust', e=> this.onAdjust(e.detail.keyword))
-    .on('@add', e=>this.fetchSetting(e.detail))
+    // .on('@add', e=>this.fetchSetting(e.detail))
+    .on('@add', e=>this.onAdd(e.detail))
     // RoutineView
     
     MenuView.setup(document.querySelector('.bottom_menu'))
@@ -29,9 +30,11 @@ export default {
     SettingView.setup(document.querySelector('#setting'))
       .on('@cancel', e=>this.renderMenu())
       .on('@addWorkout', e=> this.fetchDetail(e.detail))
+      .on('@adjWorkout', e=> this.fetchDetail(e.detail))
     
     //DetailView 는 오직 SettingView 에게만 던지면 됨
     DetailView.setup(document.querySelector('#detail'))
+      .on('@save', e=> this.onSaveDetail(e.detail))
 
     this.selectedMenu = 'MAINPAGE'
     this.renderMenu()
@@ -75,25 +78,31 @@ export default {
     })
   },
 
-  fetchSetting(data){
+  fetchSetting(data,keyword=NaN){
+    DetailView.hide()
     TimerView.hide()
     MenuView.hide()
     RoutineView.hide()
     ContentsView.hide()
     SettingView.show()
-    SettingView.render(data)
+    SettingView.render(data,keyword)
   },
 
-  fetchDetail(data){
+  fetchDetail(data,keyword=NaN,adj=false){
     SettingView.hide()
     DetailView.show()
-    DetailView.render(data)
+    if (adj) {
+      DetailView.render(data,keyword)
+    } else{
+      keyword = data.keyword
+      DetailView.render({},{keyword})
+    }
   },
 
 
   onAdjust(keyword){
     console.log(tag,'onAdjust()',keyword)
-    this.fetchSetting(RoutineModel.data[keyword])
+    this.fetchSetting(RoutineModel.data[keyword],keyword)
     // todo....
     // Routinemodel.data[keyword] 던져줄 것  {name:'R1',detail:{[asf]}}
   },
@@ -102,5 +111,24 @@ export default {
   },
   onRemove(keyword){
     console.log(tag,'onRemove()',keyword)
+  },
+
+  onAdd(keyword){
+    const index = RoutineModel.data.length
+    RoutineModel.add('temp',{})
+    this.fetchSetting(RoutineModel.data[index],index)
+  },
+
+  onSaveDetail(e) {
+    if (e.adj) {
+
+    } else {
+      RoutineModel.push(e.index.keyword,e.detail.name,e.detail.detail.item)
+      this.fetchSetting(RoutineModel.data[e.index.keyword])
+    }
+  },
+
+  check(keyword) {
+    debugger
   }
 }

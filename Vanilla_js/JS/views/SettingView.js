@@ -18,9 +18,9 @@ SettingView.setup = function(el) {
   return this
 }
 
-SettingView.render = function(data=[]) {
+SettingView.render = function(data,keyword=NaN) {
   this.el.innerHTML = Object.keys(data.detail).length == 0 ? this.template.Basic: this.template.Setting + this.getSettingHtml(data)
-  this.bindClickEvent(data)
+  this.bindClickEvent(data,keyword)
   this.show()
 
   return this
@@ -29,32 +29,60 @@ SettingView.render = function(data=[]) {
 
 // adj 의 경우
 SettingView.getSettingHtml = function(data) {
-  debugger
   return  `<div>
   <span>Routine Name</span><br><input value="${data.name.length==0? '':data.name}" type=text placeholder="루틴 이름을 적어주세요">
   <div id ="addWorkout">+ 운동 추가</div>
   </div>
-  <ul id = "routine_contests">
-  ${Object.entries(data.detail).reduce((html,item) => {
-    return html += `<li> ${item[0]} ${item[0].length} SET </li>`
-  },'</ul>')}
+  ${data.detail.reduce((html,item,index) => {
+    return html += `<li data-keyword='${index}' id = "routine_contents"><div id="routine_text">${item.name} ${item.routine[1].length} SET </div>
+    ${this.spreadItem(item.routine[1])}
+    </li>`
+  },'<ul>')+'</ul>'}
   `
 }
 
+SettingView.spreadItem = function(data = []){
+  return data.reduce((html,item,index) => {
+    debugger
+    html += `<li>${index+1} SET ${item[0]}kg &nbsp;&nbsp;${item[1]}개</li>`
+    return html
+  },'<ul class = "none">')+'<div class = settingBtn><span id = "settingDel">DEL</span><span id ="settingAdj">ADJ</span></div></ul>'
+  
+}
 
-
-SettingView.bindClickEvent = function(data) {
+SettingView.bindClickEvent = function(data,keyword=NaN) {
   this.el.querySelector('#setting_cancel').addEventListener('click', e=> this.onCancel(e))
-  this.el.querySelector('#addWorkout').addEventListener('click', e=> this.onAddWorkout(data))
+  this.el.querySelector('#addWorkout').addEventListener('click', e=> this.onAddWorkout({keyword}))
   this.inputEl = this.el.querySelector('[type=text]')
   this.inputEl.addEventListener('keyup',e=>data.name = this.inputEl)
-
+  Array.from(this.el.querySelectorAll('#routine_text')).forEach(div => {
+    div.addEventListener('click', e => this.onClick(div.parentElement))
+  })
+  Array.from(this.el.querySelectorAll('#settingAdj')).forEach(span => {
+    span.addEventListener('click', e => this.onAdjWorkout(span.parentElement.parentElement.parentElement,keyword))
+  })
 }
 
-
-SettingView.onAddWorkout = function(e) {
-  this.emit('@addWorkout',e)
+SettingView.onClick = function(e) {
+  const {keyword} = e.dataset
+  this.activeSettingDetail(keyword)
 }
+
+SettingView.activeSettingDetail = function(e){
+  this.show()
+  Array.from(this.el.querySelectorAll('#routine_contents ul')).forEach(ul =>{
+    ul.parentElement.dataset['keyword'] === e ? (ul.className == 'none' ? ul.className = 'detail' : ul.className = 'none') : false
+  })
+}
+
+SettingView.onAddWorkout = function(keyword) {
+  this.emit('@addWorkout',{keyword})
+}
+SettingView.onAdjWorkout = function(span,keyword) {
+  const index = span.dataset.keyword
+  this.emit('@adjWorkout',{keyword,index})
+}
+
 
 SettingView.onCancel = function() {
   console.log(tag,'onCancel()')
