@@ -17,6 +17,7 @@ ContentsView.setup = function(el) {
 }
 
 ContentsView.render = function(data = []) {
+  console.log(tag,"ContentsView.render()")
   this.el.innerHTML = data.length ? this.getContentHtml(data) : this.message.NO_ROUTINE
   this.bindClickEvent()
   this.show()
@@ -38,7 +39,7 @@ ContentsView.getContentHtml = function(data) {
 
 ContentsView.spreadItem = function(data = []){
   return data.detail.reduce((html,item) => {
-    html += `<li>${item.name}&nbsp;&nbsp;${item.routine[1].length}SET</li>`
+    html += `<li>${item.name}&nbsp;&nbsp;${item.routine.item.length}SET</li>`
     return html
   },'<ul>')+'</ul>'
   

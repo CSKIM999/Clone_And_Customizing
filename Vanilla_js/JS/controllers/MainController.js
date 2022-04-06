@@ -30,18 +30,18 @@ export default {
     SettingView.setup(document.querySelector('#setting'))
       .on('@cancel', e=>this.renderMenu())
       .on('@addWorkout', e=> this.fetchDetail(e.detail))
-      .on('@adjWorkout', e=> this.fetchDetail(e.detail))
+      .on('@adjWorkout', e=> this.fetchDetail({},e.detail.keyword,e.detail.index))
     
     //DetailView 는 오직 SettingView 에게만 던지면 됨
     DetailView.setup(document.querySelector('#detail'))
-      .on('@save', e=> this.onSaveDetail(e.detail))
-
+      .on('@push', e=> this.onPushDetail(e.detail))
+      .on('@adjust', e=>this.onAdjustDetail(e.detail))
+    
     this.selectedMenu = 'MAINPAGE'
     this.renderMenu()
-  },
+},
 
-  renderMenu(){
-    MenuView.setActiveMenu(this.selectedMenu)
+renderMenu(){
     if (this.selectedMenu === 'MAINPAGE'){
       this.fetchContent()
     } else if (this.selectedMenu === 'ROUTINE'){
@@ -88,14 +88,15 @@ export default {
     SettingView.render(data,keyword)
   },
 
-  fetchDetail(data,keyword=NaN,adj=false){
+  fetchDetail(data,keyword=NaN,adj=NaN){
     SettingView.hide()
     DetailView.show()
-    if (adj) {
-      DetailView.render(data,keyword)
-    } else{
+    if (isNaN(adj)) {
       keyword = data.keyword
       DetailView.render({},{keyword})
+    } else{
+      const data = Object.assign({},RoutineModel.data[keyword].detail[adj])
+      DetailView.render(data,keyword,adj)
     }
   },
 
@@ -115,18 +116,22 @@ export default {
 
   onAdd(keyword){
     const index = RoutineModel.data.length
-    RoutineModel.add('temp',{})
+    RoutineModel.add('temp',[])
     this.fetchSetting(RoutineModel.data[index],index)
   },
 
-  onSaveDetail(e) {
-    if (e.adj) {
-
-    } else {
-      RoutineModel.push(e.index.keyword,e.detail.name,e.detail.detail.item)
-      this.fetchSetting(RoutineModel.data[e.index.keyword])
-    }
+  onPushDetail(e) {
+    const index = e.keyword
+    RoutineModel.clip(index.keyword,e.data)
+    this.fetchSetting(RoutineModel.data[index.keyword],index.keyword)
   },
+
+  onAdjustDetail(e) {
+    const index = e.keyword
+    RoutineModel.update(e.keyword,e.adj,e.data)
+    this.fetchSetting(RoutineModel.data[index],index)
+  },
+
 
   check(keyword) {
     debugger

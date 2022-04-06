@@ -19,6 +19,7 @@ SettingView.setup = function(el) {
 }
 
 SettingView.render = function(data,keyword=NaN) {
+
   this.el.innerHTML = Object.keys(data.detail).length == 0 ? this.template.Basic: this.template.Setting + this.getSettingHtml(data)
   this.bindClickEvent(data,keyword)
   this.show()
@@ -34,8 +35,8 @@ SettingView.getSettingHtml = function(data) {
   <div id ="addWorkout">+ 운동 추가</div>
   </div>
   ${data.detail.reduce((html,item,index) => {
-    return html += `<li data-keyword='${index}' id = "routine_contents"><div id="routine_text">${item.name} ${item.routine[1].length} SET </div>
-    ${this.spreadItem(item.routine[1])}
+    return html += `<li data-keyword='${index}' id = "routine_contents"><div id="routine_text">${item.name} ${item.routine.item.length} SET </div>
+    ${this.spreadItem(item.routine.item)}
     </li>`
   },'<ul>')+'</ul>'}
   `
@@ -43,7 +44,6 @@ SettingView.getSettingHtml = function(data) {
 
 SettingView.spreadItem = function(data = []){
   return data.reduce((html,item,index) => {
-    debugger
     html += `<li>${index+1} SET ${item[0]}kg &nbsp;&nbsp;${item[1]}개</li>`
     return html
   },'<ul class = "none">')+'<div class = settingBtn><span id = "settingDel">DEL</span><span id ="settingAdj">ADJ</span></div></ul>'
@@ -71,6 +71,7 @@ SettingView.onClick = function(e) {
 SettingView.activeSettingDetail = function(e){
   this.show()
   Array.from(this.el.querySelectorAll('#routine_contents ul')).forEach(ul =>{
+
     ul.parentElement.dataset['keyword'] === e ? (ul.className == 'none' ? ul.className = 'detail' : ul.className = 'none') : false
   })
 }
@@ -80,6 +81,7 @@ SettingView.onAddWorkout = function(keyword) {
 }
 SettingView.onAdjWorkout = function(span,keyword) {
   const index = span.dataset.keyword
+  console.log(tag,span,keyword,'NICE')
   this.emit('@adjWorkout',{keyword,index})
 }
 
