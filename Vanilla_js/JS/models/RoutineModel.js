@@ -36,5 +36,14 @@ export default {
 
   update(keyword,index,updateData){
     this.data[keyword].detail[index] = updateData
+  },
+
+  remove(keyword,index=NaN){
+    if (isNaN(index)) {
+      // 루틴삭제
+      this.data.splice(keyword,1)
+    } else {
+      this.data[keyword].detail.splice(index,1)
+    }
   }
 }

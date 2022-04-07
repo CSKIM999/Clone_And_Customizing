@@ -149,14 +149,24 @@ DetailView.onCancel = function() {
 
 }
 
-// todo... 이 밑의 저장함수에 사용할 만약 SAME ALL 이라면, 데이터를 0번 인덱스로 복사해서 통일시킬 함수 작성
+
+DetailView.datahandling = function(data) {
+  event.stopPropagation()
+  if (data.routine.selectedToggleBottom === "SAME ALL" ){
+    data.routine.item = data.routine.item.map(x=>data.routine.item[0])
+  }
+}
+
 DetailView.onSaveDetail = function(data,keyword) {
   if (keyword===undefined){debugger}
   console.log(tag,'onSaveDetail()',data,keyword)
+  DetailView.datahandling(data)
   data.name==='' ? console.error('운동 이름을 입력해주세요'):this.emit('@push',{data,keyword})
 }
 
 DetailView.onAdjDetail = function(data,keyword,adj){
+  if (keyword===undefined || adj===undefined){debugger}
+  DetailView.datahandling(data)
   data.name==='' ? console.error('운동 이름을 입력해주세요'):this.emit('@adjust',{data,keyword,adj})
 }
 

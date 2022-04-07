@@ -29,6 +29,7 @@ export default {
     
     SettingView.setup(document.querySelector('#setting'))
       .on('@cancel', e=>this.renderMenu())
+      .on('@remove', e=>this.onRemove(e.detail))
       .on('@addWorkout', e=> this.fetchDetail(e.detail))
       .on('@adjWorkout', e=> this.fetchDetail({},e.detail.keyword,e.detail.index))
     
@@ -59,6 +60,7 @@ renderMenu(){
 
   fetchContent(){
     RoutineModel.list().then(data => {
+      MenuView.show()
       RoutineView.hide()
       SettingView.hide()
       TimerView.show()
@@ -69,6 +71,7 @@ renderMenu(){
 
   fetchRoutine(){
     RoutineModel.list().then(data =>{
+      MenuView.show()
       ContentsView.hide()
       SettingView.hide()
       TimerView.hide()
@@ -112,7 +115,17 @@ renderMenu(){
   },
   onRemove(keyword){
     console.log(tag,'onRemove()',keyword)
-  },
+    const key = keyword.keyword
+    if (keyword.index === undefined) {
+      RoutineModel.remove(key)
+      this.renderMenu()
+    } else{
+      const index = keyword.index
+      RoutineModel.remove(key,index)
+      this.fetchSetting(RoutineModel.data[key],key)
+    }
+    debugger
+    },
 
   onAdd(keyword){
     const index = RoutineModel.data.length

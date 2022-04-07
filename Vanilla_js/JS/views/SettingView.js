@@ -19,19 +19,16 @@ SettingView.setup = function(el) {
 }
 
 SettingView.render = function(data,keyword=NaN) {
-
-  this.el.innerHTML = Object.keys(data.detail).length == 0 ? this.template.Basic: this.template.Setting + this.getSettingHtml(data)
+  this.el.innerHTML = data.detail.length == 0 ? this.template.Basic: this.template.Setting + this.getSettingHtml(data)
   this.bindClickEvent(data,keyword)
   this.show()
-
   return this
 }
 
-
-// adj 의 경우
 SettingView.getSettingHtml = function(data) {
+  debugger
   return  `<div>
-  <span>Routine Name</span><br><input value="${data.name.length==0? '':data.name}" type=text placeholder="루틴 이름을 적어주세요">
+  <span>Routine Name</span><br><input value="${data.name.length==0? '':(data.name==='temp'?'':data.name)}" type=text placeholder="루틴 이름을 적어주세요">
   <div id ="addWorkout">+ 운동 추가</div>
   </div>
   ${data.detail.reduce((html,item,index) => {
@@ -47,7 +44,6 @@ SettingView.spreadItem = function(data = []){
     html += `<li>${index+1} SET ${item[0]}kg &nbsp;&nbsp;${item[1]}개</li>`
     return html
   },'<ul class = "none">')+'<div class = settingBtn><span id = "settingDel">DEL</span><span id ="settingAdj">ADJ</span></div></ul>'
-  
 }
 
 SettingView.bindClickEvent = function(data,keyword=NaN) {
@@ -60,6 +56,9 @@ SettingView.bindClickEvent = function(data,keyword=NaN) {
   })
   Array.from(this.el.querySelectorAll('#settingAdj')).forEach(span => {
     span.addEventListener('click', e => this.onAdjWorkout(span.parentElement.parentElement.parentElement,keyword))
+  })
+  Array.from(this.el.querySelectorAll('#settingDel')).forEach(span => {
+    span.addEventListener('click', e => this.onDelWorkout(span.parentElement.parentElement.parentElement,keyword))
   })
 }
 
@@ -79,10 +78,16 @@ SettingView.activeSettingDetail = function(e){
 SettingView.onAddWorkout = function(keyword) {
   this.emit('@addWorkout',{keyword})
 }
+
 SettingView.onAdjWorkout = function(span,keyword) {
   const index = span.dataset.keyword
   console.log(tag,span,keyword,'NICE')
   this.emit('@adjWorkout',{keyword,index})
+}
+
+SettingView.onDelWorkout = function(e,keyword) {
+  const index = e.dataset.keyword
+  this.emit('@remove',{keyword,index})
 }
 
 
