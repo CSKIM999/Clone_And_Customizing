@@ -26,9 +26,11 @@ ContentsView.render = function(data = []) {
 
 ContentsView.getContentHtml = function(data) {
   return data.reduce((html, item, index) => {
-    html += `<li data-keyword="${index}" id = "routine_contents"><div id = "routine_text">${item.name}
+    html += `<li data-keyword="${index}" id = "routine_contents">
+    <div id = "clickable">
+    <div id = "routine_text">${item.name}
     <div id = "routine_count">${Object.keys(item.detail).length} Workouts</div></div>
-    <div class ='none' id = 'routine_detail'>${this.spreadItem(item)}</div>
+    <div class ='none' id = 'routine_detail'>${this.spreadItem(item)}</div></div>
     <ul id = "routine_btns"><li class="routine_remove">RM</li>
     <li class="routine_adjust">ADJ</li>
     <li class="routine_start"></li></ul></li>`
@@ -56,14 +58,14 @@ ContentsView.bindClickEvent = function() {
   Array.from(this.el.querySelectorAll('li .routine_start')).forEach(li => {
     li.addEventListener('click', e => this.onStartContents(li.parentElement.parentElement))
   })
-  Array.from(this.el.querySelectorAll('#routine_text')).forEach(div => {
+  Array.from(this.el.querySelectorAll('#clickable')).forEach(div => {
     div.addEventListener('click', e => this.onClick(div.parentElement))
   })
 }
 ContentsView.activeRoutineDetail = function(e){
   this.show()
   Array.from(this.el.querySelectorAll('#routine_detail')).forEach(li =>{
-    li.parentElement.dataset['keyword'] === e ? (li.className == 'none' ? li.className = 'detail' : li.className = 'none') : false
+    li.parentElement.parentElement.dataset['keyword'] === e ? (li.className == 'none' ? li.className = 'detail' : li.className = 'none') : false
   })
 }
 

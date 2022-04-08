@@ -28,17 +28,20 @@ DetailView.setDataType = function(data) {
 }
 
 DetailView.render = function(data=[],keyword=NaN,adj=NaN) {
-  if (Object.keys(data).length === 0) {
-    this.setDataType(data)
+  this.checkKeyword = keyword
+  this.checkAdjust = adj
+  this.data = data
+  if (Object.keys(this.data).length === 0) {
+    this.setDataType(this.data)
   }
-  this.el.innerHTML =this.template.Setting + this.getDetailHtml(data)
+  this.el.innerHTML =this.template.Setting + this.getDetailHtml(this.data)
   this.setActiveToggle()
-  isNaN(adj) ? this.bindClickEvent(data,keyword):this.bindClickEvent(data,keyword,adj) 
+  this.bindClickEvent()
   return this
 }
 
-DetailView.getDetailHtml = function(data) {
-  return data.routine.item.reduce((html,item,index) => {
+DetailView.getDetailHtml = function() {
+  return this.data.routine.item.reduce((html,item,index) => {
     html += `
     <div data-keyword=${index} class =${this.selectedToggleBottom ==="SAME ALL" ? (index===0 ? "spreadDetail-on" : "spreadDetail-off") : "spreadDetail-on"}>
     <span class = ${this.selectedToggleBottom ==="SAME ALL" ? "disactivation" : "activation"}>SET ${index+1}</span>
@@ -53,10 +56,10 @@ DetailView.getDetailHtml = function(data) {
     return html
   }, `<div id = "detail_body">
   <div><span>WorkOut Name</span><br>
-  <input id = "detailName" value ="${data.name===''? '':data.name}"type=text placeholder="운동 이름을 적어주세요"></div>
+  <input id = "detailName" value ="${this.data.name===''? '':this.data.name}"type=text placeholder="운동 이름을 적어주세요"></div>
   <div>세트수와 세트별 개수 및 무게를 알려주세요</div>
   <ul id = "detailToggle">
-  <li><input id='setCount' value = ${data.routine.item.length} type="number" min="1" max="100"> SET</li>
+  <li><input id='setCount' value = ${this.data.routine.item.length} type="number" min="1" max="100"> SET</li>
   <li class = 'toggleTop'><span class>W,C</span><span class>Only C</span><span class>Only T</span></li>
   <li class = 'toggleBottom'><span class>SAME ALL</span><span>EACH</span></li>
   </ul>
@@ -64,22 +67,22 @@ DetailView.getDetailHtml = function(data) {
   ` ) + "  </div></div></div>"
 }
 
-DetailView.bindClickEvent = function(data,keyword,adj=NaN) {
+DetailView.bindClickEvent = function() {
   console.log(tag,"bindClickEvent()")
-  this.el.querySelector('#detailName').addEventListener('change',e=> data.name= e.currentTarget.value)
+  this.el.querySelector('#detailName').addEventListener('change',e=> this.data.name= e.currentTarget.value)
   this.el.querySelector('#setting_cancel').addEventListener('click', e=> this.onCancel(e))
   this.el.querySelector('#setting_save').addEventListener('click', e=>
-  isNaN(adj)? this.onSaveDetail(data,keyword.keyword):this.onAdjDetail(data,keyword,adj))
+  isNaN(this.checkAdjust)? this.onSaveDetail():this.onAdjDetail())
   // 세트수 str return 
-  this.el.querySelector('#setCount').addEventListener('change', e=> this.changeValue(e,data,keyword,adj))
+  this.el.querySelector('#setCount').addEventListener('change', e=> this.changeValue(e))
   Array.from(this.el.querySelectorAll('.toggleTop span')).forEach(span => {
-    span.addEventListener('click', e => this.changeValue(span,data,keyword,adj))
+    span.addEventListener('click', e => this.changeValue(span))
   })
   Array.from(this.el.querySelectorAll('.toggleBottom span')).forEach(span => {
-    span.addEventListener('click', e => this.changeValue(span,data,keyword,adj))
+    span.addEventListener('click', e => this.changeValue(span))
   })
   Array.from(this.el.querySelectorAll('#detailData input')).forEach(input => {
-    input.addEventListener('change', e=> this.onChangeInput(input,data))
+    input.addEventListener('change', e=> this.onChangeInput(input))
   })
 }
 
@@ -92,82 +95,88 @@ DetailView.setActiveToggle = function() {
   })
 }
 
-DetailView.onChangeCount = function(e,data) {
-  if (data.routine.item.length !== +e) {
-    while (data.routine.item.length < +e) {
-      data.routine.item.push(data.routine.item[data.routine.item.length-1])
+DetailView.onChangeCount = function(e) {
+  if (this.data.routine.item.length !== +e) {
+    while (this.data.routine.item.length < +e) {
+      this.data.routine.item.push(this.data.routine.item[this.data.routine.item.length-1])
     }
-    while (data.routine.item.length > +e) {
-      data.routine.item.pop()
+    while (this.data.routine.item.length > +e) {
+      this.data.routine.item.pop()
     }
   }
 }
 
 
-DetailView.onChangeInput = function(e,data) {
+DetailView.onChangeInput = function(e) {
   if (e.id==='weight') {
-    data.routine.item[e.parentElement.dataset.keyword][0] = +e.value
+    this.data.routine.item[e.parentElement.dataset.keyword][0] = +e.value
   } else {
-    data.routine.item[e.parentElement.dataset.keyword][1] = +e.value
+    this.data.routine.item[e.parentElement.dataset.keyword][1] = +e.value
   }
 }
 
-DetailView.onChangeToggleTop = function(e,data) {
+DetailView.onChangeToggleTop = function(e) {
   console.log(tag,'onChangeToggle()',e)
   this.selectedToggleTop = e
-  data.routine.selectedToggleTop = e
+  this.data.routine.selectedToggleTop = e
   this.setActiveToggle()
 
 }
 
-DetailView.onChangeToggleBottom = function(e,data) {
+DetailView.onChangeToggleBottom = function(e) {
   console.log(tag,'onChangeToggle()',e)
   this.selectedToggleBottom = e
-  data.routine.selectedToggleBottom = e
+  this.data.routine.selectedToggleBottom = e
   this.setActiveToggle()
 
 }
 
-DetailView.changeValue = function(e,data,keyword,adj){
+DetailView.changeValue = function(e){
   event.stopPropagation()
-  // this.onChangeCount(e.currentTarget.value,data)
-  // this.onChangeToggleTop(span.innerHTML,data)
-  // this.onChangeToggleBottom(span.innerHTML,data)
+
   if (e.parentElement===undefined) {
-    this.onChangeCount(e.currentTarget.value,data)
+    this.onChangeCount(e.currentTarget.value,this.data)
   } else if (e.parentElement.className==="toggleBottom") {
-    this.onChangeToggleBottom(e.innerHTML,data)
+    this.onChangeToggleBottom(e.innerHTML,this.data)
   } else {
-    this.onChangeToggleTop(e.innerHTML,data)
+    this.onChangeToggleTop(e.innerHTML,this.data)
   }
-  isNaN(adj)? this.render(data,keyword):this.render(data,keyword,adj)
+  isNaN(this.adj)? this.render(this.data,this.keyword):this.render(this.data,this.keyword,this.adj)
 }
 
 
 DetailView.onCancel = function() {
   console.log(tag,'onCancel()')
-
+  this.emit('@cancel',{})
 }
 
 
-DetailView.datahandling = function(data) {
+
+DetailView.datahandling = function() {
   event.stopPropagation()
-  if (data.routine.selectedToggleBottom === "SAME ALL" ){
-    data.routine.item = data.routine.item.map(x=>data.routine.item[0])
+  if (this.data.routine.selectedToggleBottom === "SAME ALL" ){
+    this.data.routine.item = this.data.routine.item.map(x=>this.data.routine.item[0])
   }
 }
 
-DetailView.onSaveDetail = function(data,keyword) {
-  if (keyword===undefined){debugger}
-  console.log(tag,'onSaveDetail()',data,keyword)
-  DetailView.datahandling(data)
-  data.name==='' ? console.error('운동 이름을 입력해주세요'):this.emit('@push',{data,keyword})
+DetailView.onSaveDetail = function() {
+  event.stopPropagation()
+  if (this.checkKeyword===NaN){debugger}
+  console.log(tag,'onSaveDetail()',this.data,this.keyword)
+  DetailView.datahandling(this.data)
+  const keyword = this.checkKeyword
+  const data = this.data
+  this.data.name==='' ? alert('운동 이름을 입력해주세요'):this.emit('@push',{data,keyword})
 }
 
-DetailView.onAdjDetail = function(data,keyword,adj){
-  if (keyword===undefined || adj===undefined){debugger}
-  DetailView.datahandling(data)
-  data.name==='' ? console.error('운동 이름을 입력해주세요'):this.emit('@adjust',{data,keyword,adj})
+DetailView.onAdjDetail = function(){
+  event.stopPropagation()
+  if (this.checkKeyword===NaN || this.checkAdjust===NaN){debugger}
+  DetailView.datahandling(this.data)
+  const keyword = this.checkKeyword
+  const adj = this.checkAdjust
+  const data = this.data
+  this.data.name==='' ? alert('운동 이름을 입력해주세요'):this.emit('@adjust',{data,keyword,adj})
 }
 
 

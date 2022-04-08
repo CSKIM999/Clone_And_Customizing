@@ -7,7 +7,8 @@ import DetailView from "../views/DetailView.js"
 
 import RoutineModel from "../models/RoutineModel.js"
 
-
+const d = new Date()
+const today = d.getFullYear()+""+("00"+(d.getMonth()+1)).slice(-2)+""+("00"+d.getDate()).slice(-2)
 const tag = '[MainController]'
 export default {
   init() {
@@ -29,27 +30,30 @@ export default {
     
     SettingView.setup(document.querySelector('#setting'))
       .on('@cancel', e=>this.renderMenu())
-      .on('@remove', e=>this.onRemove(e.detail))
+      // .on('@remove', e=>this.onRemove(e.detail))
       .on('@addWorkout', e=> this.fetchDetail(e.detail))
       .on('@adjWorkout', e=> this.fetchDetail({},e.detail.keyword,e.detail.index))
-    
+      .on('@save', e=>this.getSave(e.detail))
     //DetailView 는 오직 SettingView 에게만 던지면 됨
     DetailView.setup(document.querySelector('#detail'))
       .on('@push', e=> this.onPushDetail(e.detail))
       .on('@adjust', e=>this.onAdjustDetail(e.detail))
-    
+      .on('@cancel', e=>isNaN(this.handledDataAdj)?this.fetchSetting(this.handledData):this.fetchSetting(this.handledData,this.handledDataAdj))
+    console.log(today)
     this.selectedMenu = 'MAINPAGE'
     this.renderMenu()
-},
+  },
 
 renderMenu(){
-    if (this.selectedMenu === 'MAINPAGE'){
-      this.fetchContent()
-    } else if (this.selectedMenu === 'ROUTINE'){
-      this.fetchRoutine()
-    } else {
-      console.log('fetchCALENDER')
-    }
+  this.handledData = {}
+  this.handledDataAdj = NaN
+  if (this.selectedMenu === 'MAINPAGE'){
+    this.fetchContent()
+  } else if (this.selectedMenu === 'ROUTINE'){
+    this.fetchRoutine()
+  } else {
+    console.log('fetchCALENDER')
+  }
   },
 
   onChangeMenu(menuName) {
@@ -81,14 +85,18 @@ renderMenu(){
     })
   },
 
-  fetchSetting(data,keyword=NaN){
+  fetchSetting(data,keyword=NaN,adj=NaN){
     DetailView.hide()
     TimerView.hide()
     MenuView.hide()
     RoutineView.hide()
     ContentsView.hide()
     SettingView.show()
-    SettingView.render(data,keyword)
+    if (isNaN(adj)) {
+      SettingView.render(data,keyword)
+    } else {
+      SettingView.render(data,keyword,adj)
+    }
   },
 
   fetchDetail(data,keyword=NaN,adj=NaN){
@@ -98,51 +106,76 @@ renderMenu(){
       keyword = data.keyword
       DetailView.render({},{keyword})
     } else{
-      const data = Object.assign({},RoutineModel.data[keyword].detail[adj])
+      const data = JSON.parse(JSON.stringify(this.handledData.detail[adj]))
       DetailView.render(data,keyword,adj)
     }
   },
 
+  getSave(e){
+    if (isNaN(this.handledDataAdj)) {
+      try{
+        RoutineModel.add(e)
+      } catch (error) {
+        alert('이미 같은 이름의 ROUTINE 이 존재합니다')
+        return this.fetchSetting(e)
+      }
+    } else {
+      RoutineModel.update(this.handledDataAdj,e)
+    }
+    this.renderMenu()
+  },
 
+  // 본래 Object.assign 을 사용하다가 View 에서의 Model 수정문제로 인해 Deepcopy 를 사용하게 됨.
+  // 데이터의 크기가 크지 않기때문에 굳이 lodash 대신 비교적 비효율적 JSON parse 를 통한 Deepcopy 를 사용함
   onAdjust(keyword){
     console.log(tag,'onAdjust()',keyword)
-    this.fetchSetting(RoutineModel.data[keyword],keyword)
-    // todo....
-    // Routinemodel.data[keyword] 던져줄 것  {name:'R1',detail:{[asf]}}
+    this.handledData = JSON.parse(JSON.stringify(RoutineModel.data[keyword]))
+    this.handledDataAdj = keyword
+    this.fetchSetting(this.handledData,keyword,keyword)
   },
+
   onStart(keyword){
     console.log(tag,'onStart()',keyword)
   },
+
   onRemove(keyword){
     console.log(tag,'onRemove()',keyword)
-    const key = keyword.keyword
-    if (keyword.index === undefined) {
-      RoutineModel.remove(key)
-      this.renderMenu()
-    } else{
-      const index = keyword.index
-      RoutineModel.remove(key,index)
-      this.fetchSetting(RoutineModel.data[key],key)
+    if (confirm('해당 항목을 삭제하시겠습니까?') == true) {
+      const key = keyword.keyword
+      if (keyword.index === undefined) {
+        RoutineModel.remove(key)
+        this.renderMenu()
+      } else{
+        const index = keyword.index
+        RoutineModel.remove(key,index)
+        this.fetchSetting(this.handledData,key)
+      }
+    } else {
+      return
     }
-    debugger
     },
 
   onAdd(keyword){
     const index = RoutineModel.data.length
-    RoutineModel.add('temp',[])
-    this.fetchSetting(RoutineModel.data[index],index)
+    this.handledData = {name:'temp',detail:[]}
+    this.handledDataAdj = NaN
+    this.fetchSetting(this.handledData,index)
   },
 
   onPushDetail(e) {
     const index = e.keyword
-    RoutineModel.clip(index.keyword,e.data)
-    this.fetchSetting(RoutineModel.data[index.keyword],index.keyword)
+    if(this.handledData.detail.some(item=>item.name === e.data.name)) {
+      return console.error('해당 이름의 Routine이 이미 존재합니다')
+    } else {
+      this.handledData.detail.push(e.data)
+      this.fetchSetting(this.handledData,index.keyword)
+    }
   },
 
   onAdjustDetail(e) {
     const index = e.keyword
-    RoutineModel.update(e.keyword,e.adj,e.data)
-    this.fetchSetting(RoutineModel.data[index],index)
+    this.handledData.detail[e.adj] = e.data
+    this.fetchSetting(this.handledData,index)
   },
 
 

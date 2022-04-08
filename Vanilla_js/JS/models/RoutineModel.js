@@ -20,23 +20,28 @@ export default {
     return Promise.resolve(this.data)
   },
 
-  add(name='',detail=[]){
+  add(saveData){
+    const name = saveData.name.trim()
     console.log('[RoutineModel.add]',name,detail)
-    name = name.trim()
     if (!name) return
     if (this.data.some(item => item.name ===name)){
-      return console.error("해당 이름의 Routine이 이미 존재합니다");
+      return error("해당 이름의 Routine이 이미 존재합니다");
     }
-    this.data.push({name,detail})
+    this.data.push(saveData)
+    return console.log('SUCSESS')
+  },
+  
+  update(keyword,updateData={}) {
+    this.data[keyword] = updateData
   },
 
-  clip(keyword,clipData){
-    this.data[keyword].detail.push(clipData)
-  },
+  // clip(keyword,clipData){
+  //   this.data[keyword].detail.push(clipData)
+  // },
 
-  update(keyword,index,updateData){
-    this.data[keyword].detail[index] = updateData
-  },
+  // update(keyword,index,updateData){
+  //   this.data[keyword].detail[index] = updateData
+  // },
 
   remove(keyword,index=NaN){
     if (isNaN(index)) {

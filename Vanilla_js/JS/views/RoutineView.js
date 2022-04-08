@@ -35,9 +35,11 @@ RoutineView.noData = function() {
 
 RoutineView.getRoutineHtml = function(data) {
   return data.reduce((html, item, index) => { 
-    html += `<li data-keyword="${index}" id = "routine_contents"><div id = "routine_text">${item.name}
+    html += `<li data-keyword="${index}" id = "routine_contents">
+    <div id = "clickable">
+    <div id = "routine_text">${item.name}
     <div id = "routine_count">${Object.keys(item.detail).length} Workouts</div></div>
-    <div class ='none' id = 'routine_detail'>Routine Detail${this.spreadItem(item)}</div>
+    <div class ='none' id = 'routine_detail'>Routine Detail${this.spreadItem(item)}</div></div>
     <ul id = "routine_btns"><li class="routine_remove">RM</li>
     <li class="routine_adjust">ADJ</li>
     <li class="routine_start"></li></ul></li>`
@@ -48,8 +50,8 @@ RoutineView.getRoutineHtml = function(data) {
   +"<ul id = 'routine_contents_margin'>") + '</ul.>'
 }
 RoutineView.spreadItem = function(data = []){
-  return Object.entries(data.detail).reduce((html,item) => {
-    html += `<li>${item[0]}&nbsp;&nbsp;${item[1].length}SET</li>`
+  return data.detail.reduce((html,item) => {
+    html += `<li>${item.name}&nbsp;&nbsp;${item.routine.item.length}SET</li>`
     return html
   },'<ul>')+'</ul>'
 }
@@ -79,8 +81,8 @@ RoutineView.bindClickEvent = function() {
   // Array.from(this.el.querySelectorAll('#routine_contents')).forEach(li => {
   //   li.addEventListener('click', e => this.onClick(li))
   // })
-  Array.from(this.el.querySelectorAll('#routine_text')).forEach(div => {
-    div.addEventListener('click', e => this.onClick(div.parentElement))
+  Array.from(this.el.querySelectorAll('#clickable')).forEach(div => {
+    div.addEventListener('click', e => this.onClick(div.parentElement.parentElement))
   })
 }
 
