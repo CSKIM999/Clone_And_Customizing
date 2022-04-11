@@ -146,7 +146,7 @@ DetailView.changeValue = function(e){
 
 
 DetailView.onCancel = function() {
-  console.log(tag,'onCancel()')
+    console.log(tag,'onCancel()')
   this.emit('@cancel',{})
 }
 

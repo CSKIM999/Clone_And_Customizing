@@ -4,6 +4,7 @@ import RoutineView from "../views/RoutineView.js"
 import MenuView from "../views/MenuView.js"
 import SettingView from "../views/SettingView.js"
 import DetailView from "../views/DetailView.js"
+import CalendarView from "../views/CalendarView.js"
 
 import RoutineModel from "../models/RoutineModel.js"
 
@@ -39,7 +40,8 @@ export default {
       .on('@push', e=> this.onPushDetail(e.detail))
       .on('@adjust', e=>this.onAdjustDetail(e.detail))
       .on('@cancel', e=>isNaN(this.handledDataAdj)?this.fetchSetting(this.handledData):this.fetchSetting(this.handledData,this.handledDataAdj))
-    console.log(today)
+    CalendarView.setup(document.querySelector('#calendar'))
+
     this.selectedMenu = 'MAINPAGE'
     this.renderMenu()
   },
@@ -52,7 +54,8 @@ renderMenu(){
   } else if (this.selectedMenu === 'ROUTINE'){
     this.fetchRoutine()
   } else {
-    console.log('fetchCALENDER')
+    this.fetchCalendar()
+    console.log(tag,'fetchCALENDER')
   }
   },
 
@@ -66,6 +69,7 @@ renderMenu(){
     RoutineModel.list().then(data => {
       MenuView.show()
       RoutineView.hide()
+      CalendarView.hide()
       SettingView.hide()
       TimerView.show()
       ContentsView.show()
@@ -77,12 +81,21 @@ renderMenu(){
     RoutineModel.list().then(data =>{
       MenuView.show()
       ContentsView.hide()
+      CalendarView.hide()
       SettingView.hide()
       TimerView.hide()
       RoutineView.show()
       RoutineView.render(data)
-
     })
+  },
+  fetchCalendar(){
+    MenuView.show()
+    ContentsView.hide()
+    SettingView.hide()
+    RoutineView.hide()
+    TimerView.hide()
+    CalendarView.show()
+    CalendarView.render()
   },
 
   fetchSetting(data,keyword=NaN,adj=NaN){
