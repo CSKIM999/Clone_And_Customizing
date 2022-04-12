@@ -151,6 +151,31 @@ header .timer {
     color: pink;
 }
 
+.calendarToggle {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 3vh;
+}
+
+.calendarColumn {
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+}
+
+.calendarColumn div {
+    width: 5vh;
+}
+
+
+
+.exist {
+    background-color: blueviolet;
+}
+#selected {
+    color : red;
+    text-decoration-line: underline;
+}
 
 .spreadDetail-on {
     display: flex;

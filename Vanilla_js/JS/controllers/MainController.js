@@ -7,9 +7,9 @@ import DetailView from "../views/DetailView.js"
 import CalendarView from "../views/CalendarView.js"
 
 import RoutineModel from "../models/RoutineModel.js"
+import HistoryModel from "../models/HistoryModel.js"
 
-const d = new Date()
-const today = d.getFullYear()+""+("00"+(d.getMonth()+1)).slice(-2)+""+("00"+d.getDate()).slice(-2)
+
 const tag = '[MainController]'
 export default {
   init() {
@@ -41,7 +41,12 @@ export default {
       .on('@adjust', e=>this.onAdjustDetail(e.detail))
       .on('@cancel', e=>isNaN(this.handledDataAdj)?this.fetchSetting(this.handledData):this.fetchSetting(this.handledData,this.handledDataAdj))
     CalendarView.setup(document.querySelector('#calendar'))
+      .on('@change', e=> this.onChangeDate(e.detail))
 
+
+    const d = new Date()
+    this.today = {Year:d.getFullYear(),Month:("00"+(d.getMonth()+1)).slice(-2) ,day:("00"+d.getDate()).slice(-2)}
+    this.currentDay = {Year:d.getFullYear(),Month:d.getMonth()}
     this.selectedMenu = 'MAINPAGE'
     this.renderMenu()
   },
@@ -55,7 +60,6 @@ renderMenu(){
     this.fetchRoutine()
   } else {
     this.fetchCalendar()
-    console.log(tag,'fetchCALENDER')
   }
   },
 
@@ -88,14 +92,18 @@ renderMenu(){
       RoutineView.render(data)
     })
   },
+
   fetchCalendar(){
-    MenuView.show()
-    ContentsView.hide()
-    SettingView.hide()
-    RoutineView.hide()
-    TimerView.hide()
-    CalendarView.show()
-    CalendarView.render()
+    HistoryModel.list().then(data => {
+      const DataForRender = this.getHistoryData(data) // [9,10,21,30] Array 형식 key값 반환
+      MenuView.show()
+      ContentsView.hide()
+      SettingView.hide()
+      RoutineView.hide()
+      TimerView.hide()
+      CalendarView.show()
+      CalendarView.render(DataForRender)
+    })
   },
 
   fetchSetting(data,keyword=NaN,adj=NaN){
@@ -138,8 +146,16 @@ renderMenu(){
     this.renderMenu()
   },
 
-  // 본래 Object.assign 을 사용하다가 View 에서의 Model 수정문제로 인해 Deepcopy 를 사용하게 됨.
-  // 데이터의 크기가 크지 않기때문에 굳이 lodash 대신 비교적 비효율적 JSON parse 를 통한 Deepcopy 를 사용함
+  getHistoryData(data){
+    const Year = this.currentDay.Year
+    const Month = +this.currentDay.Month+1
+    if (data[Year] == undefined) {
+      return undefined
+    }
+    return data[Year][Month] == undefined ? undefined : Object.keys(data[Year][Month]).map(x => +x)
+    
+  },
+
   onAdjust(keyword){
     console.log(tag,'onAdjust()',keyword)
     this.handledData = JSON.parse(JSON.stringify(RoutineModel.data[keyword]))
@@ -191,7 +207,11 @@ renderMenu(){
     this.fetchSetting(this.handledData,index)
   },
 
-
+  onChangeDate(e) {
+    this.currentDay.Year = e.callYear
+    this.currentDay.Month = e.callMonth
+    this.fetchCalendar()
+  },
   check(keyword) {
     debugger
   }
