@@ -28,6 +28,7 @@ DetailView.setDataType = function(data) {
 }
 
 DetailView.render = function(data=[],keyword=NaN,adj=NaN) {
+  event.stopPropagation()
   this.checkKeyword = keyword
   this.checkAdjust = adj
   this.data = data
@@ -44,14 +45,14 @@ DetailView.getDetailHtml = function() {
   return this.data.routine.item.reduce((html,item,index) => {
     html += `
     <div data-keyword=${index} class =${this.selectedToggleBottom ==="SAME ALL" ? (index===0 ? "spreadDetail-on" : "spreadDetail-off") : "spreadDetail-on"}>
-    <span class = ${this.selectedToggleBottom ==="SAME ALL" ? "disactivation" : "activation"}>SET ${index+1}</span>
-    <input id = "weight" class= ${this.selectedToggleTop ==="W,C" ? "activation" : "disactivation"} value=${item[0]} type="number">
+    <span class = ${this.selectedToggleBottom ==="SAME ALL" ? "none" : "detail"}>SET ${index+1}</span>
+    <input id = "weight" class= ${this.selectedToggleTop ==="W,C" ? "detail" : "none"} value=${item[0]} type="number">
     <input id = "count" value=${item[1]} type="number" min="1" max="100">
-    <span class=${this.selectedToggleTop ==="Only C" ? "activation" : "disactivation"}> 개</span>
-    <div class =${this.selectedToggleTop ==="W,C" ? "activation" : "disactivation"}>
+    <span class=${this.selectedToggleTop ==="Only C" ? "detail" : "none"}> 개</span>
+    <div class =${this.selectedToggleTop ==="W,C" ? "detail" : "none"}>
     <button>+5</button><button>-5</button><br><button>+1</button><button>-1</button>
     </div>
-    <span class=${this.selectedToggleTop ==="Only T" ? "activation" : "disactivation"}> test </span>
+    <span class=${this.selectedToggleTop ==="Only T" ? "detail" : "none"}> test </span>
     </div>`
     return html
   }, `<div id = "detail_body">
@@ -68,11 +69,13 @@ DetailView.getDetailHtml = function() {
 }
 
 DetailView.bindClickEvent = function() {
-  console.log(tag,"bindClickEvent()")
+  console.log(tag,"bindClickEvent()",this.checkAdjust)
   this.el.querySelector('#detailName').addEventListener('change',e=> this.data.name= e.currentTarget.value)
   this.el.querySelector('#setting_cancel').addEventListener('click', e=> this.onCancel(e))
-  this.el.querySelector('#setting_save').addEventListener('click', e=>
-  isNaN(this.checkAdjust)? this.onSaveDetail():this.onAdjDetail())
+  isNaN(this.checkAdjust) ? this.el.querySelector('#setting_save').addEventListener('click', e=>this.onSaveDetail()):
+  this.el.querySelector('#setting_save').addEventListener('click', e=>this.onAdjDetail())
+  // this.el.querySelector('#setting_save').addEventListener('click', e=>
+  // isNaN(this.checkAdjust)? this.onSaveDetail():this.onAdjDetail())
   // 세트수 str return 
   this.el.querySelector('#setCount').addEventListener('change', e=> this.changeValue(e))
   Array.from(this.el.querySelectorAll('.toggleTop span')).forEach(span => {
@@ -87,6 +90,7 @@ DetailView.bindClickEvent = function() {
 }
 
 DetailView.setActiveToggle = function() {
+  event.stopImmediatePropagation()
   Array.from(this.el.querySelectorAll('.toggleTop span')).forEach(span =>{
     span.innerHTML===this.selectedToggleTop ? span.className = "on" : span.className="off"
   })
@@ -146,7 +150,7 @@ DetailView.changeValue = function(e){
 
 
 DetailView.onCancel = function() {
-    console.log(tag,'onCancel()')
+  console.log(tag,'onCancel()')
   this.emit('@cancel',{})
 }
 
@@ -161,8 +165,8 @@ DetailView.datahandling = function() {
 
 DetailView.onSaveDetail = function() {
   event.stopPropagation()
-  if (this.checkKeyword===NaN){debugger}
-  console.log(tag,'onSaveDetail()',this.data,this.keyword)
+  if (this.checkKeyword===undefined) {debugger}
+  console.log(tag,'onSaveDetail()',this.data,this.checkkeyword)
   DetailView.datahandling(this.data)
   const keyword = this.checkKeyword
   const data = this.data

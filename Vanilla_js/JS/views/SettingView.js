@@ -49,6 +49,7 @@ SettingView.spreadItem = function(data = []){
 }
 
 SettingView.bindClickEvent = function() {
+  event.stopImmediatePropagation()
   this.el.querySelector('#setting_cancel').addEventListener('click', e=> this.onCancel(e))
   this.el.querySelector('#setting_save').addEventListener('click', e=> this.onSave(e))
   this.el.querySelector('#addWorkout').addEventListener('click', e=> this.onAddWorkout())
@@ -58,40 +59,45 @@ SettingView.bindClickEvent = function() {
     div.addEventListener('click', e => this.onClick(div.parentElement))
   })
   Array.from(this.el.querySelectorAll('#settingAdj')).forEach(span => {
-    span.addEventListener('click', e => this.onAdjWorkout(span.parentElement.parentElement.parentElement))
+    span.addEventListener('click', e => this.onAdjWorkout(span.parentElement.parentElement.parentElement.parentElement))
   })
   Array.from(this.el.querySelectorAll('#settingDel')).forEach(span => {
-    span.addEventListener('click', e => this.onDelWorkout(span.parentElement.parentElement.parentElement))
+    span.addEventListener('click', e => this.onDelWorkout(span.parentElement.parentElement.parentElement.parentElement))
   })
 }
 
 SettingView.onClick = function(e) {
+  event.stopImmediatePropagation()
+  debugger
   const {keyword} = e.dataset
   this.activeSettingDetail(keyword)
 }
 
 SettingView.onSave = function(e) {
-  event.stopPropagation()
+  event.stopImmediatePropagation()
   this.emit('@save',this.data)
 }
 
 SettingView.activeSettingDetail = function(e){
+  
   Array.from(this.el.querySelectorAll('#routine_contents ul')).forEach(ul =>{
     ul.parentElement.parentElement.dataset['keyword'] === e ? (ul.className == 'none' ? ul.className = 'detail' : ul.className = 'none') : false
   })
 }
 
 SettingView.onAddWorkout = function() {
+  event.stopImmediatePropagation()
   const keyword = this.checkKeyword
   console.log(tag,"onAddWorkout()", keyword)
-  this.emit('@addWorkout',{keyword})
+  this.emit('@add',{keyword})
 }
 
 SettingView.onAdjWorkout = function(span) {
-  console.log(tag,'onDelWorkout()')
+  event.stopImmediatePropagation()
+  console.log(tag,'onAdjWorkout()')
   const index = span.dataset.keyword
   const keyword = this.checkKeyword
-  this.emit('@adjWorkout',{keyword,index})
+  this.emit('@adjust',{keyword,index})
 }
 
 SettingView.onDelWorkout = function(e) {

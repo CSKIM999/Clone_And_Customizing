@@ -28,12 +28,17 @@ header .timer {
     text-align: center;
     padding-bottom: 2vh;
 }
+
+/* Menu click */
 .none {
     display: none;
 }
 .detail {
     display: "";
 }
+
+
+
 #routine_detail {
     padding: 1vh;
 }
@@ -71,6 +76,7 @@ header .timer {
     width: 100%;
     padding-top: 11vh;
 }
+
 #routine_contents{
     margin: 2vh;
     border: 1px solid;
@@ -117,12 +123,19 @@ header .timer {
     padding-top: 11vh;
 }
 
+
+
 #setting_header {
     display: flex;
     list-style: none;
     width: 100%;
     background-color: cornflowerblue;
 }
+#setting_header li{
+    flex : 1;
+    padding: 2vh;
+}
+
 
 #detail_body {
     width: fit-content;
@@ -131,10 +144,6 @@ header .timer {
     transform: translateX(-50%);
 }
 
-#setting_header li{
-    flex : 1;
-    padding: 2vh;
-}
 
 
 
@@ -151,6 +160,9 @@ header .timer {
     color: pink;
 }
 
+
+/* CALENDARVIEW */
+
 .calendarToggle {
     display: flex;
     justify-content: space-evenly;
@@ -166,7 +178,12 @@ header .timer {
 .calendarColumn div {
     width: 5vh;
 }
-
+.prevMonth {
+    background-color: gray;
+}
+.nextMonth { 
+    background-color: gray;
+}
 
 
 .exist {
@@ -215,9 +232,3 @@ header .timer {
     content: 'START';
 }
 
-.activation {
-    text-align: center;
-}
-.disactivation {
-    display: none;
-}

@@ -5,34 +5,50 @@ const CalendarView = Object.create(View)
 
 
 CalendarView.template = {
-  Basic : `<div class = 'calendarToggle' >
+  BasicTop: `<div id = "calendarTop"><div class = 'calendarToggle' >
   <button class = "dateToggle"><</button><span id = "currentDate">DATE</span><button class = "dateToggle">></button>
   </div>
-  <div id = "calendarBody">` //</ul></div>
+  <div id = "calendarBody"></div></div>`,
+  BasicBottom: `<div id = 'calendarBottom'>
+  <div class ='detail' id='calendarDetailCover'>운동 정보가 없습니다</div>
+  <div class='none' id = 'calendarDetail'></div></div>`
 }
 
-CalendarView.setup = function(el) {
+CalendarView.setup = function (el) {
   this.init(el)
   this.show()
+  this.el.innerHTML = this.template.BasicTop + this.template.BasicBottom
   this.currentYear = new Date().getFullYear()
   this.currentMonth = new Date().getMonth()
   this.selectedDay = 0
   return this
 }
 
-CalendarView.render = function(data=undefined) {
+CalendarView.renderTop = function (data = undefined) {
   this.histData = data
-  console.log(tag,"render()")
-  // 이전 달의 마지막 일자
-  const fromDay = new Date(this.currentYear,this.currentMonth,0)
-  const nowDay = new Date(this.currentYear,this.currentMonth+1,0)
-  this.el.innerHTML = this.template.Basic + this.getCalendarHTML(fromDay,nowDay)
+  const fromDay = new Date(this.currentYear, this.currentMonth, 0)
+  const nowDay = new Date(this.currentYear, this.currentMonth + 1, 0)
+  this.el.querySelector('#calendarBody').innerHTML = this.getCalendarHTML(fromDay, nowDay)
   this.el.querySelector('#currentDate').innerHTML = this.currentYear + "." + (this.currentMonth + 1)
   this.bindClickEvent()
 }
 
-CalendarView.getCalendarHTML = function(fromDay,nowDay) {
-  console.log(tag,"getCalendarHTML()")
+CalendarView.renderBottom = function (data = undefined) {
+  this.el.querySelector('#calendarDetailCover').className = 'none'
+  this.el.querySelector('#calendarDetail').className = 'detail'
+  if (data == undefined) {
+    this.el.querySelector('#calendarDetailCover').className = 'detail'
+    this.el.querySelector('#calendarDetail').className = 'none'
+    const blankTarget = this.histData.indexOf(this.selectedDay)
+    delete this.histData[blankTarget]
+    this.renderTop(this.histData)
+  } else {
+    this.el.querySelector('#calendarDetail').innerHTML = this.getCalendarBottomHTML(data)
+  }
+  this.bindClickEvent()
+}
+
+CalendarView.getCalendarHTML = function (fromDay, nowDay) {
   const beforeDate = fromDay.getDate() //날짜
   const beforeDay = fromDay.getDay() //요일
   const afterDate = nowDay.getDate()
@@ -40,59 +56,118 @@ CalendarView.getCalendarHTML = function(fromDay,nowDay) {
   let returnHTML = '<ul><li class = "calendarColumn">'
   let count = 1
 
-  for (let i = beforeDate - beforeDay; beforeDay < 6 ? i <= beforeDate : 0 ; i++ && count++) {
-    returnHTML += '<div data-keyword = ' +(count - 1)+ ' class = "nonexist">' +i+ '</div>'
-    count%7 == 0 ? returnHTML+='</li><li class = "calendarColumn">':''
+  for (let i = beforeDate - beforeDay; beforeDay < 6 ? i <= beforeDate : 0; i++ && count++) {
+    returnHTML += '<div data-keyword = ' + (count - 1) + ' class = "prevMonth">' + i + '</div>'
+    count % 7 == 0 ? returnHTML += '</li><li class = "calendarColumn">' : ''
   }
-  for (let i = 1; i <=afterDate; i++ && count++){
-    const histCheckpoint = this.histData ? ( this.histData.indexOf(i)>=0 ? "exist" : "nonexist") : "nonexist"
-    const idCheck = this.selectedDay == i? "selected":""
-    returnHTML += '<div data-keyword = ' +(count - 1)+' class = ' + histCheckpoint + ' id = ' + idCheck +'>' +i+ '</div>'
-    count%7 == 0 ? returnHTML+='</li><li class = "calendarColumn">':''
+  for (let i = 1; i <= afterDate; i++ && count++) {
+    const histCheckpoint = this.histData ? (this.histData.indexOf(i) >= 0 ? "exist" : "nonexist") : "nonexist"
+    const idCheck = this.selectedDay == i ? "selected" : ""
+    returnHTML += '<div data-keyword = ' + (count - 1) + ' class = ' + histCheckpoint + ' id = ' + idCheck + '>' + i + '</div>'
+    count % 7 == 0 ? returnHTML += '</li><li class = "calendarColumn">' : ''
   }
-  for (let i = 1; i<7-afterDay; i++ && count++) {
-    returnHTML += '<div data-keyword = ' +(count - 1)+ ' class = "nonexist">' +i+ '</div>'
-    count%7 == 0 ? returnHTML+='</li><li class = "calendarColumn">':''
+  for (let i = 1; i < 7 - afterDay; i++ && count++) {
+    returnHTML += '<div data-keyword = ' + (count - 1) + ' class = "nextMonth">' + i + '</div>'
+    count % 7 == 0 ? returnHTML += '</li><li class = "calendarColumn">' : ''
   }
-  return returnHTML+'</ul>'
+  return returnHTML + '</ul></div>'
 }
 
-CalendarView.bindClickEvent = function() {
-  Array.from(this.el.querySelectorAll('button')).forEach(button => {
-    button.addEventListener('click', e=> this.onClickBtn(e.target))
+CalendarView.getCalendarBottomHTML = function (data) {
+  return data.reduce((html, item, index) => {
+    html += `<li data-keyword="${index}" id = "routine_contents">
+    <div id = "clickable">
+    <div id = "routine_text">${item.name}
+    <div id = "routine_count">${Object.keys(item.detail).length} Workouts</div></div>
+    <div class ='none' id = 'routine_detail'>${this.spreadItem(item)}</div></div>
+    <button id = "routine_btns" class="routine_remove">RM</button>`
+    return html
+  }, "<ul>") + '</ul>'
+}
+
+CalendarView.spreadItem = function (data = []) {
+  return data.detail.reduce((html, item) => {
+    html += `<li>${item.name}&nbsp;&nbsp;${item.routine.length}SET</li>`
+    return html
+  }, '<ul>') + '</ul>'
+}
+
+CalendarView.bindClickEvent = function () {
+  Array.from(this.el.querySelectorAll('.dateToggle')).forEach(button => {
+    button.addEventListener('click', e => this.onClickBtn(e.target))
   })
   Array.from(this.el.querySelectorAll('.calendarColumn div')).forEach(div => {
-    div.addEventListener('click', e=> this.onClickDate(e.target))
+    div.addEventListener('click', e => this.onClickDate(e.target))
+  })
+  Array.from(this.el.querySelectorAll('#calendarDetail .routine_remove')).forEach(button => {
+    button.addEventListener('click', e => this.onRemoveHistory(button.parentElement))
+  })
+  Array.from(this.el.querySelectorAll('#clickable')).forEach(div => {
+    div.addEventListener('click', e => this.onClick(div.parentElement))
   })
 }
 
-CalendarView.onClickDate = function(e) {
-  console.log(tag,"onClickDate()",e)
-  if (( +e.dataset.keyword - e.textContent )<0) {
+CalendarView.onClickDate = function (e) {
+  event.stopImmediatePropagation()
+  console.log(tag, "onClickDate()", e)
+  if (e.className === 'exist') {
+    const callYear = this.currentYear
+    const callMonth = this.currentMonth + 1
+    this.emit('@get', { callYear, callMonth, e })
+  } else {
+    this.el.querySelector('#calendarDetailCover').className = 'detail'
+    this.el.querySelector('#calendarDetail').className = 'none'
+  }
+  if ((e.dataset.keyword < 7 && e.textContent > 25)) {
     this.selectedDay = +e.textContent
     e.textContent = '<'
     this.onClickBtn(e)
-  } else if (e.dataset.keyword>30 && e.textContent< 7) {
+  } else if (e.dataset.keyword > 30 && e.textContent < 7) {
     this.selectedDay = +e.textContent
     e.textContent = '>'
     this.onClickBtn(e)
-  } else{
+  } else {
     this.selectedDay = +e.innerHTML
   }
-  this.render(this.histData)
+  this.renderTop(this.histData)
 }
-CalendarView.onClickBtn = function(e) {
-  console.log(tag,"onClickDate()",e)
-  e.className === 'calendarToggle' ? this.selectedDay = 0 : ''
+CalendarView.onClickBtn = function (e) {
+  event.stopImmediatePropagation()
+  console.log(tag, "onClickDate()", e)
+  // e.className === 'dateToggle' ? this.selectedDay = 0 : ''
+  this.selectedDay = 0
+  this.el.querySelector('#calendarDetailCover').className = 'detail'
+  this.el.querySelector('#calendarDetail').className = 'none'
   if (e.textContent === '<') {
-    this.currentMonth - 1 === -1 ? (this.currentMonth = 11,this.currentYear -= 1) : this.currentMonth -= 1
+    this.currentMonth - 1 === -1 ? (this.currentMonth = 11, this.currentYear -= 1) : this.currentMonth -= 1
   } else {
     this.currentMonth + 1 === 12 ? (this.currentMonth = 0, this.currentYear += 1) : this.currentMonth += 1
   }
   const callYear = this.currentYear
-  const callMonth = this.currentMonth
-  this.emit('@change', {callYear,callMonth})
+  const callMonth = this.currentMonth + 1
+  this.emit('@change', { callYear, callMonth })
 }
+
+CalendarView.onClick = function (e) {
+  console.log(tag,'onclick()')
+  Array.from(this.el.querySelectorAll('#calendarDetail #routine_detail')).forEach(div => {
+    event.stopPropagation()
+    div.parentElement.parentElement.dataset['keyword'] === e.dataset.keyword ? (div.className == 'none' ? div.className = 'detail' : div.className = 'none') : ''
+  })
+}
+CalendarView.onRemoveHistory = function (e) {
+  console.log(tag,"onRemoveHistory()")
+  if (confirm('정말 해당 기록을 삭제하시겠습니까??') == true) {
+    const callYear = this.currentYear
+    const callMonth = this.currentMonth + 1
+    const callDay = this.selectedDay
+    const keyword = e.dataset.keyword
+    this.emit('@remove', { callYear, callMonth, callDay, keyword })
+  } else {
+    return 
+  }
+}
+
 
 
 export default CalendarView

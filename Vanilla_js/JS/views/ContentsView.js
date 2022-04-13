@@ -17,7 +17,7 @@ ContentsView.setup = function(el) {
 }
 
 ContentsView.render = function(data = []) {
-  console.log(tag,"ContentsView.render()")
+  console.log(tag,"ContentsView.render()",history)
   this.el.innerHTML = data.length ? this.getContentHtml(data) : this.message.NO_ROUTINE
   this.bindClickEvent()
   this.show()
@@ -64,7 +64,7 @@ ContentsView.bindClickEvent = function() {
 }
 ContentsView.activeRoutineDetail = function(e){
   this.show()
-  Array.from(this.el.querySelectorAll('#routine_detail')).forEach(li =>{
+  Array.from(this.el.querySelectorAll('.contents #routine_detail')).forEach(li =>{
     li.parentElement.parentElement.dataset['keyword'] === e ? (li.className == 'none' ? li.className = 'detail' : li.className = 'none') : false
   })
 }

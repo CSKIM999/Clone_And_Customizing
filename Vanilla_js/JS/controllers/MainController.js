@@ -15,52 +15,54 @@ export default {
   init() {
     TimerView.setup(document.querySelector('.timer'))
     ContentsView.setup(document.querySelector('.contents'))
-    .on('@start', e=> this.onStart(e.detail.keyword))
-    .on('@remove', e=> this.onRemove(e.detail.keyword))
-    .on('@adjust', e=> this.onAdjust(e.detail.keyword))
+      .on('@start', e => this.onStart(e.detail.keyword))
+      .on('@remove', e => this.onRemove(e.detail.keyword))
+      .on('@adjust', e => this.onAdjust(e.detail.keyword))
     RoutineView.setup(document.querySelector('#routines_contents'))
-    .on('@start', e=> this.onStart(e.detail.keyword))
-    .on('@remove', e=> this.onRemove(e.detail.keyword))
-    .on('@adjust', e=> this.onAdjust(e.detail.keyword))
-    // .on('@add', e=>this.fetchSetting(e.detail))
-    .on('@add', e=>this.onAdd(e.detail))
+      .on('@start', e => this.onStart(e.detail.keyword))
+      .on('@remove', e => this.onRemove(e.detail.keyword))
+      .on('@adjust', e => this.onAdjust(e.detail.keyword))
+      // .on('@add', e=>this.fetchSetting(e.detail))
+      .on('@add', e => this.onAdd(e.detail))
     // RoutineView
-    
+
     MenuView.setup(document.querySelector('.bottom_menu'))
-    .on('@change' , e=> this.onChangeMenu(e.detail.menuName))
-    
+      .on('@change', e => this.onChangeMenu(e.detail.menuName))
+
     SettingView.setup(document.querySelector('#setting'))
-      .on('@cancel', e=>this.renderMenu())
+      .on('@cancel', e => this.renderMenu())
       // .on('@remove', e=>this.onRemove(e.detail))
-      .on('@addWorkout', e=> this.fetchDetail(e.detail))
-      .on('@adjWorkout', e=> this.fetchDetail({},e.detail.keyword,e.detail.index))
-      .on('@save', e=>this.getSave(e.detail))
+      .on('@add', e => this.fetchDetail(e.detail))
+      .on('@adjust', e => this.fetchDetail({}, e.detail.keyword, e.detail.index))
+      .on('@save', e => this.getSave(e.detail))
     //DetailView 는 오직 SettingView 에게만 던지면 됨
     DetailView.setup(document.querySelector('#detail'))
-      .on('@push', e=> this.onPushDetail(e.detail))
-      .on('@adjust', e=>this.onAdjustDetail(e.detail))
-      .on('@cancel', e=>isNaN(this.handledDataAdj)?this.fetchSetting(this.handledData):this.fetchSetting(this.handledData,this.handledDataAdj))
+      .on('@push', e => this.onPushDetail(e.detail))
+      .on('@adjust', e => this.onAdjustDetail(e.detail))
+      .on('@cancel', e => isNaN(this.handledDataAdj) ? this.fetchSetting(this.handledData) : this.fetchSetting(this.handledData, this.handledDataAdj))
     CalendarView.setup(document.querySelector('#calendar'))
-      .on('@change', e=> this.onChangeDate(e.detail))
+      .on('@change', e => this.onChangeDate(e.detail))
+      .on('@get', e => this.giveHistoryData(e.detail))
+      .on('@remove', e => this.onRemoveHistory(e.detail))
 
 
     const d = new Date()
-    this.today = {Year:d.getFullYear(),Month:("00"+(d.getMonth()+1)).slice(-2) ,day:("00"+d.getDate()).slice(-2)}
-    this.currentDay = {Year:d.getFullYear(),Month:d.getMonth()}
+    this.today = { Year: d.getFullYear(), Month: ("00" + (d.getMonth() + 1)).slice(-2), day: ("00" + d.getDate()).slice(-2) }
+    this.currentDay = { Year: d.getFullYear(), Month: (d.getMonth() + 1) }
     this.selectedMenu = 'MAINPAGE'
     this.renderMenu()
   },
 
-renderMenu(){
-  this.handledData = {}
-  this.handledDataAdj = NaN
-  if (this.selectedMenu === 'MAINPAGE'){
+  renderMenu() {
+    this.handledData = {}
+    this.handledDataAdj = NaN
+    if (this.selectedMenu === 'MAINPAGE') {
     this.fetchContent()
-  } else if (this.selectedMenu === 'ROUTINE'){
-    this.fetchRoutine()
-  } else {
-    this.fetchCalendar()
-  }
+    } else if (this.selectedMenu === 'ROUTINE') {
+      this.fetchRoutine()
+    } else {
+      this.fetchCalendar()
+    }
   },
 
   onChangeMenu(menuName) {
@@ -69,7 +71,7 @@ renderMenu(){
     this.renderMenu()
   },
 
-  fetchContent(){
+  fetchContent() {
     RoutineModel.list().then(data => {
       MenuView.show()
       RoutineView.hide()
@@ -81,8 +83,8 @@ renderMenu(){
     })
   },
 
-  fetchRoutine(){
-    RoutineModel.list().then(data =>{
+  fetchRoutine() {
+    RoutineModel.list().then(data => {
       MenuView.show()
       ContentsView.hide()
       CalendarView.hide()
@@ -93,7 +95,7 @@ renderMenu(){
     })
   },
 
-  fetchCalendar(){
+  fetchCalendar() {
     HistoryModel.list().then(data => {
       const DataForRender = this.getHistoryData(data) // [9,10,21,30] Array 형식 key값 반환
       MenuView.show()
@@ -102,11 +104,11 @@ renderMenu(){
       RoutineView.hide()
       TimerView.hide()
       CalendarView.show()
-      CalendarView.render(DataForRender)
+      CalendarView.renderTop(DataForRender)
     })
   },
 
-  fetchSetting(data,keyword=NaN,adj=NaN){
+  fetchSetting(data, keyword = NaN, adj = NaN) {
     DetailView.hide()
     TimerView.hide()
     MenuView.hide()
@@ -114,97 +116,89 @@ renderMenu(){
     ContentsView.hide()
     SettingView.show()
     if (isNaN(adj)) {
-      SettingView.render(data,keyword)
+      SettingView.render(data, keyword)
     } else {
-      SettingView.render(data,keyword,adj)
+      SettingView.render(data, keyword, adj)
     }
   },
 
-  fetchDetail(data,keyword=NaN,adj=NaN){
+  fetchDetail(data, keyword = NaN, adj = NaN) {
     SettingView.hide()
     DetailView.show()
     if (isNaN(adj)) {
       keyword = data.keyword
-      DetailView.render({},{keyword})
-    } else{
+      DetailView.render({}, { keyword })
+    } else {
       const data = JSON.parse(JSON.stringify(this.handledData.detail[adj]))
-      DetailView.render(data,keyword,adj)
+      DetailView.render(data, keyword, adj)
     }
   },
 
-  getSave(e){
+  getSave(e) {
     if (isNaN(this.handledDataAdj)) {
-      try{
+      try {
         RoutineModel.add(e)
       } catch (error) {
         alert('이미 같은 이름의 ROUTINE 이 존재합니다')
         return this.fetchSetting(e)
       }
     } else {
-      RoutineModel.update(this.handledDataAdj,e)
+      RoutineModel.update(this.handledDataAdj, e)
     }
     this.renderMenu()
   },
 
-  getHistoryData(data){
-    const Year = this.currentDay.Year
-    const Month = +this.currentDay.Month+1
-    if (data[Year] == undefined) {
-      return undefined
-    }
-    return data[Year][Month] == undefined ? undefined : Object.keys(data[Year][Month]).map(x => +x)
-    
-  },
-
-  onAdjust(keyword){
-    console.log(tag,'onAdjust()',keyword)
+  onAdjust(keyword) {
+    console.log(tag, 'onAdjust()', keyword)
     this.handledData = JSON.parse(JSON.stringify(RoutineModel.data[keyword]))
     this.handledDataAdj = keyword
-    this.fetchSetting(this.handledData,keyword,keyword)
+    this.fetchSetting(this.handledData, keyword, keyword)
   },
 
-  onStart(keyword){
-    console.log(tag,'onStart()',keyword)
+  onStart(keyword) {
+    console.log(tag, 'onStart()', keyword)
   },
 
-  onRemove(keyword){
-    console.log(tag,'onRemove()',keyword)
+  onRemove(keyword) {
+    console.log(tag, 'onRemove()', keyword)
     if (confirm('해당 항목을 삭제하시겠습니까?') == true) {
       const key = keyword.keyword
       if (keyword.index === undefined) {
         RoutineModel.remove(key)
         this.renderMenu()
-      } else{
+      } else {
         const index = keyword.index
-        RoutineModel.remove(key,index)
-        this.fetchSetting(this.handledData,key)
+        RoutineModel.remove(key, index)
+        this.fetchSetting(this.handledData, key)
       }
     } else {
       return
     }
-    },
+  },
 
-  onAdd(keyword){
+  onAdd(keyword) {
     const index = RoutineModel.data.length
-    this.handledData = {name:'temp',detail:[]}
+    this.handledData = { name: 'temp', detail: [] }
     this.handledDataAdj = NaN
-    this.fetchSetting(this.handledData,index)
+    this.fetchSetting(this.handledData, index)
   },
 
   onPushDetail(e) {
+    event.stopImmediatePropagation()
     const index = e.keyword
-    if(this.handledData.detail.some(item=>item.name === e.data.name)) {
+    if (this.handledData.detail.some(item => item.name === e.data.name)) {
       return console.error('해당 이름의 Routine이 이미 존재합니다')
     } else {
       this.handledData.detail.push(e.data)
-      this.fetchSetting(this.handledData,index.keyword)
+      this.fetchSetting(this.handledData, index.keyword)
     }
   },
 
   onAdjustDetail(e) {
+    event.stopImmediatePropagation()
     const index = e.keyword
     this.handledData.detail[e.adj] = e.data
-    this.fetchSetting(this.handledData,index)
+    this.fetchSetting(this.handledData, index)
   },
 
   onChangeDate(e) {
@@ -212,7 +206,45 @@ renderMenu(){
     this.currentDay.Month = e.callMonth
     this.fetchCalendar()
   },
+
+
+  giveHistoryData(e) {
+    HistoryModel.list().then(data => {
+      const returnData = this.getHistoryData(data, e)
+      CalendarView.renderBottom(returnData)
+    })
+  },
+
+  getHistoryData(data, Bottom = false) {
+    // for renderBottom
+    if (Bottom) {
+      const Year = Bottom.callYear
+      const Month = Bottom.callMonth
+      const Day = typeof (Bottom.e) === 'object' ? Bottom.e.textContent : Bottom.e
+      if (data[Year] == undefined) {
+        return undefined
+      }
+      return data[Year][Month] == undefined ? undefined :
+        (data[Year][Month][Day] == undefined ? undefined : data[Year][Month][Day])
+    }
+    // for renderTop
+    const Year = this.currentDay.Year
+    const Month = +this.currentDay.Month
+    if (data[Year] == undefined) {
+      return undefined
+    }
+    return data[Year][Month] == undefined ? undefined : Object.keys(data[Year][Month]).map(x => +x)
+  },
+
+  onRemoveHistory(e) {
+    const RYear = e.callYear
+    const RMonth = e.callMonth
+    const RDay = e.callDay
+    const keyword = e.keyword
+    HistoryModel.remove(RYear, RMonth, RDay, keyword)
+    this.giveHistoryData({ callYear: RYear, callMonth: RMonth, e: RDay })
+  },
+
   check(keyword) {
-    debugger
   }
 }
