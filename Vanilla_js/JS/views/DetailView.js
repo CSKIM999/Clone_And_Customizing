@@ -34,6 +34,9 @@ DetailView.render = function(data=[],keyword=NaN,adj=NaN) {
   this.data = data
   if (Object.keys(this.data).length === 0) {
     this.setDataType(this.data)
+  } else{
+    this.selectedToggleTop = data.routine.selectedToggleTop
+    this.selectedToggleBottom = data.routine.selectedToggleBottom
   }
   this.el.innerHTML =this.template.Setting + this.getDetailHtml(this.data)
   this.setActiveToggle()
@@ -87,6 +90,9 @@ DetailView.bindClickEvent = function() {
   Array.from(this.el.querySelectorAll('#detailData input')).forEach(input => {
     input.addEventListener('change', e=> this.onChangeInput(input))
   })
+  Array.from(this.el.querySelectorAll('#detailData button')).forEach(button => {
+    button.addEventListener('click', e=> this.onClickButton(e.currentTarget))
+  })
 }
 
 DetailView.setActiveToggle = function() {
@@ -99,6 +105,19 @@ DetailView.setActiveToggle = function() {
   })
 }
 
+DetailView.onClickButton = function(e) {
+  const num = +e.textContent
+  const target = +e.parentElement.parentElement.querySelector('#weight').value
+  const keyword = e.parentElement.parentElement.dataset.keyword
+  if (target + num >= 0) {
+    e.parentElement.parentElement.querySelector('#weight').value = target + num
+    this.data.routine.item[keyword][0] = target + num
+  } else {
+    e.parentElement.parentElement.querySelector('#weight').value = 0
+    this.data.routine.item[keyword][0] = 0
+  }
+}
+
 DetailView.onChangeCount = function(e) {
   if (this.data.routine.item.length !== +e) {
     while (this.data.routine.item.length < +e) {
@@ -109,7 +128,6 @@ DetailView.onChangeCount = function(e) {
     }
   }
 }
-
 
 DetailView.onChangeInput = function(e) {
   if (e.id==='weight') {
@@ -137,7 +155,6 @@ DetailView.onChangeToggleBottom = function(e) {
 
 DetailView.changeValue = function(e){
   event.stopPropagation()
-
   if (e.parentElement===undefined) {
     this.onChangeCount(e.currentTarget.value,this.data)
   } else if (e.parentElement.className==="toggleBottom") {
@@ -145,7 +162,7 @@ DetailView.changeValue = function(e){
   } else {
     this.onChangeToggleTop(e.innerHTML,this.data)
   }
-  isNaN(this.adj)? this.render(this.data,this.keyword):this.render(this.data,this.keyword,this.adj)
+  isNaN(this.checkAdjust)? this.render(this.data,this.checkKeyword):this.render(this.data,this.checkKeyword,this.checkAdjust)
 }
 
 

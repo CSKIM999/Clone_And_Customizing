@@ -17,7 +17,7 @@ ContentsView.setup = function(el) {
 }
 
 ContentsView.render = function(data = []) {
-  console.log(tag,"ContentsView.render()",history)
+  console.log(tag,"ContentsView.render()")
   this.el.innerHTML = data.length ? this.getContentHtml(data) : this.message.NO_ROUTINE
   this.bindClickEvent()
   this.show()

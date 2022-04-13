@@ -25,6 +25,7 @@ SettingView.render = function(data,keyword=NaN,adj=NaN) {
 }
 
 SettingView.getSettingHtml = function() {
+  debugger
   return  `<div>
   <span>Routine Name</span><br><input value="${this.data.name.length==0? '':(this.data.name==='temp'?'':this.data.name)}" type=text placeholder="루틴 이름을 적어주세요">
   <div><span id ="addWorkout">+ 운동 추가</span></div>
@@ -49,7 +50,6 @@ SettingView.spreadItem = function(data = []){
 }
 
 SettingView.bindClickEvent = function() {
-  event.stopImmediatePropagation()
   this.el.querySelector('#setting_cancel').addEventListener('click', e=> this.onCancel(e))
   this.el.querySelector('#setting_save').addEventListener('click', e=> this.onSave(e))
   this.el.querySelector('#addWorkout').addEventListener('click', e=> this.onAddWorkout())
@@ -67,8 +67,6 @@ SettingView.bindClickEvent = function() {
 }
 
 SettingView.onClick = function(e) {
-  event.stopImmediatePropagation()
-  debugger
   const {keyword} = e.dataset
   this.activeSettingDetail(keyword)
 }
@@ -79,21 +77,18 @@ SettingView.onSave = function(e) {
 }
 
 SettingView.activeSettingDetail = function(e){
-  
   Array.from(this.el.querySelectorAll('#routine_contents ul')).forEach(ul =>{
     ul.parentElement.parentElement.dataset['keyword'] === e ? (ul.className == 'none' ? ul.className = 'detail' : ul.className = 'none') : false
   })
 }
 
 SettingView.onAddWorkout = function() {
-  event.stopImmediatePropagation()
   const keyword = this.checkKeyword
   console.log(tag,"onAddWorkout()", keyword)
   this.emit('@add',{keyword})
 }
 
 SettingView.onAdjWorkout = function(span) {
-  event.stopImmediatePropagation()
   console.log(tag,'onAdjWorkout()')
   const index = span.dataset.keyword
   const keyword = this.checkKeyword

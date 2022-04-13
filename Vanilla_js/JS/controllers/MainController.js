@@ -1,5 +1,6 @@
 import TimerView from "../views/TimerView.js"
 import ContentsView from "../views/ContentsView.js"
+import WorkoutView from "../views/WorkoutView.js"
 import RoutineView from "../views/RoutineView.js"
 import MenuView from "../views/MenuView.js"
 import SettingView from "../views/SettingView.js"
@@ -18,6 +19,8 @@ export default {
       .on('@start', e => this.onStart(e.detail.keyword))
       .on('@remove', e => this.onRemove(e.detail.keyword))
       .on('@adjust', e => this.onAdjust(e.detail.keyword))
+    WorkoutView.setup(document.querySelector('.workout'))
+
     RoutineView.setup(document.querySelector('#routines_contents'))
       .on('@start', e => this.onStart(e.detail.keyword))
       .on('@remove', e => this.onRemove(e.detail.keyword))
@@ -73,23 +76,34 @@ export default {
 
   fetchContent() {
     RoutineModel.list().then(data => {
-      MenuView.show()
+      WorkoutView.hide()
       RoutineView.hide()
       CalendarView.hide()
       SettingView.hide()
+      MenuView.show()
       TimerView.show()
       ContentsView.show()
       ContentsView.render(data)
     })
   },
-
+  fetchWorkOut() {
+    RoutineView.hide()
+    CalendarView.hide()
+    SettingView.hide()
+    ContentsView.hide()
+    MenuView.show()
+    TimerView.show()
+    WorkoutView.show()
+    WorkoutView.render(this.workoutData)
+  },
   fetchRoutine() {
     RoutineModel.list().then(data => {
-      MenuView.show()
+      WorkoutView.hide()
       ContentsView.hide()
       CalendarView.hide()
       SettingView.hide()
       TimerView.hide()
+      MenuView.show()
       RoutineView.show()
       RoutineView.render(data)
     })
@@ -98,11 +112,12 @@ export default {
   fetchCalendar() {
     HistoryModel.list().then(data => {
       const DataForRender = this.getHistoryData(data) // [9,10,21,30] Array 형식 key값 반환
-      MenuView.show()
+      WorkoutView.hide()
       ContentsView.hide()
       SettingView.hide()
       RoutineView.hide()
       TimerView.hide()
+      MenuView.show()
       CalendarView.show()
       CalendarView.renderTop(DataForRender)
     })
@@ -157,6 +172,9 @@ export default {
 
   onStart(keyword) {
     console.log(tag, 'onStart()', keyword)
+    debugger
+    this.workoutData = JSON.parse(JSON.stringify(RoutineModel.data[keyword]))
+    this.fetchWorkOut()
   },
 
   onRemove(keyword) {
@@ -184,7 +202,6 @@ export default {
   },
 
   onPushDetail(e) {
-    event.stopImmediatePropagation()
     const index = e.keyword
     if (this.handledData.detail.some(item => item.name === e.data.name)) {
       return console.error('해당 이름의 Routine이 이미 존재합니다')
@@ -195,7 +212,6 @@ export default {
   },
 
   onAdjustDetail(e) {
-    event.stopImmediatePropagation()
     const index = e.keyword
     this.handledData.detail[e.adj] = e.data
     this.fetchSetting(this.handledData, index)
