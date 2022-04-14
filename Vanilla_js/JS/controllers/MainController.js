@@ -20,6 +20,8 @@ export default {
       .on('@remove', e => this.onRemove(e.detail.keyword))
       .on('@adjust', e => this.onAdjust(e.detail.keyword))
     WorkoutView.setup(document.querySelector('.workout'))
+      .on('@start', e=> this.onStartTimer())
+      .on('@error', e=> this.renderMenu())
 
     RoutineView.setup(document.querySelector('#routines_contents'))
       .on('@start', e => this.onStart(e.detail.keyword))
@@ -86,6 +88,7 @@ export default {
       ContentsView.render(data)
     })
   },
+
   fetchWorkOut() {
     RoutineView.hide()
     CalendarView.hide()
@@ -96,6 +99,7 @@ export default {
     WorkoutView.show()
     WorkoutView.render(this.workoutData)
   },
+
   fetchRoutine() {
     RoutineModel.list().then(data => {
       WorkoutView.hide()
@@ -136,7 +140,7 @@ export default {
       SettingView.render(data, keyword, adj)
     }
   },
-
+  
   fetchDetail(data, keyword = NaN, adj = NaN) {
     SettingView.hide()
     DetailView.show()
@@ -148,33 +152,21 @@ export default {
       DetailView.render(data, keyword, adj)
     }
   },
-
-  getSave(e) {
-    if (isNaN(this.handledDataAdj)) {
-      try {
-        RoutineModel.add(e)
-      } catch (error) {
-        alert('이미 같은 이름의 ROUTINE 이 존재합니다')
-        return this.fetchSetting(e)
-      }
-    } else {
-      RoutineModel.update(this.handledDataAdj, e)
-    }
-    this.renderMenu()
+  
+  ////////////////////////////////////////////////////////////////////////////
+  ///////////////////// Contents & Routine View Function /////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  onStart(keyword) {
+    console.log(tag, 'onStart()', keyword)
+    this.workoutData = JSON.parse(JSON.stringify(RoutineModel.data[keyword]))
+    this.fetchWorkOut()
   },
-
+  
   onAdjust(keyword) {
     console.log(tag, 'onAdjust()', keyword)
     this.handledData = JSON.parse(JSON.stringify(RoutineModel.data[keyword]))
     this.handledDataAdj = keyword
     this.fetchSetting(this.handledData, keyword, keyword)
-  },
-
-  onStart(keyword) {
-    console.log(tag, 'onStart()', keyword)
-    debugger
-    this.workoutData = JSON.parse(JSON.stringify(RoutineModel.data[keyword]))
-    this.fetchWorkOut()
   },
 
   onRemove(keyword) {
@@ -194,12 +186,41 @@ export default {
     }
   },
 
+
   onAdd(keyword) {
     const index = RoutineModel.data.length
     this.handledData = { name: 'temp', detail: [] }
     this.handledDataAdj = NaN
     this.fetchSetting(this.handledData, index)
   },
+    ////////////////////////////////////////////////////////////////////////////
+  //////////////////////////// DetailView Function ///////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  onStartTimer() {
+
+  },
+
+  ////////////////////////////////////////////////////////////////////////////
+  /////////////////////////// SettingView Function //////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+
+  getSave(e) {
+    if (isNaN(this.handledDataAdj)) {
+      try {
+        RoutineModel.add(e)
+      } catch (error) {
+        alert('이미 같은 이름의 ROUTINE 이 존재합니다')
+        return this.fetchSetting(e)
+      }
+    } else {
+      RoutineModel.update(this.handledDataAdj, e)
+    }
+    this.renderMenu()
+  },
+
+  ////////////////////////////////////////////////////////////////////////////
+  //////////////////////////// DetailView Function ///////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
 
   onPushDetail(e) {
     const index = e.keyword
@@ -216,13 +237,15 @@ export default {
     this.handledData.detail[e.adj] = e.data
     this.fetchSetting(this.handledData, index)
   },
+  ////////////////////////////////////////////////////////////////////////////
+  /////////////////////////// CalendarView Function //////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
 
   onChangeDate(e) {
     this.currentDay.Year = e.callYear
     this.currentDay.Month = e.callMonth
     this.fetchCalendar()
   },
-
 
   giveHistoryData(e) {
     HistoryModel.list().then(data => {
@@ -261,6 +284,13 @@ export default {
     this.giveHistoryData({ callYear: RYear, callMonth: RMonth, e: RDay })
   },
 
+
+
+
+
+
+  //debugfunction
   check(keyword) {
+  debugger
   }
 }

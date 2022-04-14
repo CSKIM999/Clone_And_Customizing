@@ -36,7 +36,9 @@ header .timer {
 .detail {
     display: "";
 }
-
+.done {
+    color: rebeccapurple;
+}
 
 
 #routine_detail {

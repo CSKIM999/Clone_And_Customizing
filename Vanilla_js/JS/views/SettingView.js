@@ -25,7 +25,6 @@ SettingView.render = function(data,keyword=NaN,adj=NaN) {
 }
 
 SettingView.getSettingHtml = function() {
-  debugger
   return  `<div>
   <span>Routine Name</span><br><input value="${this.data.name.length==0? '':(this.data.name==='temp'?'':this.data.name)}" type=text placeholder="루틴 이름을 적어주세요">
   <div><span id ="addWorkout">+ 운동 추가</span></div>
@@ -54,7 +53,7 @@ SettingView.bindClickEvent = function() {
   this.el.querySelector('#setting_save').addEventListener('click', e=> this.onSave(e))
   this.el.querySelector('#addWorkout').addEventListener('click', e=> this.onAddWorkout())
   this.inputEl = this.el.querySelector('[type=text]')
-  this.inputEl.addEventListener('change',e=>this.data.name = this.inputEl.value)
+  this.inputEl.addEventListener('keyup',e=>this.data.name = this.inputEl.value)
   Array.from(this.el.querySelectorAll('#clickable')).forEach(div => {
     div.addEventListener('click', e => this.onClick(div.parentElement))
   })
@@ -73,6 +72,9 @@ SettingView.onClick = function(e) {
 
 SettingView.onSave = function(e) {
   event.stopImmediatePropagation()
+  if (this.el.querySelector('input').value.trim() === '') {
+    alert('루틴 이름을 입력해주세요!')
+  }
   this.emit('@save',this.data)
 }
 
