@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="kr">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,18 +8,12 @@
   <title>CSKIM's Workout App with MVC Pattern</title>
   <link rel="stylesheet" href="./style.css">
 </head>
+
 <body>
-  <header>
-    <div class = "timer" style="display:none">
-      타이머 자리입니다
-    </div>
-  </header>
-  
-<!-- NONE -->
-  <!-- <h2 id = 'contents_guide'>CSKIM with MVC</h2> -->
-  <div class = "contents" style="display:none"></div>
-  <div class = "workout" style="display:none"></div>
-  <div class = "routines" id = 'routines_contents' style="display:none"></div>
+  <div class="timer" style="display:none">00 : 00 : 00</div>
+  <div class="contents" style="display:none"></div>
+  <div class="workout" style="display:none"></div>
+  <div class="routines" id='routines_contents' style="display:none"></div>
   <div id="setting" style="display: none"></div>
   <div id="detail" style="display: none;"></div>
   <div id="calendar" style="display: none;"></div>
@@ -26,10 +21,11 @@
     <ul>
       <li class="active">MAINPAGE</li>
       <li class="none">ROUTINE</li>
-      <li class="none">CALENDER</li>
+      <li class="none">CALENDAR</li>
     </ul>
   </div>
-  
+
   <script type="module" src="./JS/app.js"></script>
 </body>
+
 </html>

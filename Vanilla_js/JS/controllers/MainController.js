@@ -10,8 +10,9 @@ import CalendarView from "../views/CalendarView.js"
 import RoutineModel from "../models/RoutineModel.js"
 import HistoryModel from "../models/HistoryModel.js"
 
-
 const tag = '[MainController]'
+
+
 export default {
   init() {
     TimerView.setup(document.querySelector('.timer'))
@@ -19,28 +20,29 @@ export default {
       .on('@start', e => this.onStart(e.detail.keyword))
       .on('@remove', e => this.onRemove(e.detail.keyword))
       .on('@adjust', e => this.onAdjust(e.detail.keyword))
+
     WorkoutView.setup(document.querySelector('.workout'))
-      .on('@start', e=> this.onStartTimer())
-      .on('@error', e=> this.renderMenu())
+      .on('@start', e => this.onStartTimer())
+      .on('@tempStop', e => this.onStopTimer(true))
+      .on('@tempStart', e => this.onStopTimer(false))
+      .on('@save', e => this.onEndWorkout(e.detail))
+      .on('@cancel', e => this.renderMenu())
+      .on('@error', e => this.renderMenu())
 
     RoutineView.setup(document.querySelector('#routines_contents'))
       .on('@start', e => this.onStart(e.detail.keyword))
       .on('@remove', e => this.onRemove(e.detail.keyword))
       .on('@adjust', e => this.onAdjust(e.detail.keyword))
-      // .on('@add', e=>this.fetchSetting(e.detail))
       .on('@add', e => this.onAdd(e.detail))
-    // RoutineView
 
     MenuView.setup(document.querySelector('.bottom_menu'))
       .on('@change', e => this.onChangeMenu(e.detail.menuName))
 
     SettingView.setup(document.querySelector('#setting'))
       .on('@cancel', e => this.renderMenu())
-      // .on('@remove', e=>this.onRemove(e.detail))
       .on('@add', e => this.fetchDetail(e.detail))
       .on('@adjust', e => this.fetchDetail({}, e.detail.keyword, e.detail.index))
       .on('@save', e => this.getSave(e.detail))
-    //DetailView 는 오직 SettingView 에게만 던지면 됨
     DetailView.setup(document.querySelector('#detail'))
       .on('@push', e => this.onPushDetail(e.detail))
       .on('@adjust', e => this.onAdjustDetail(e.detail))
@@ -52,17 +54,19 @@ export default {
 
 
     const d = new Date()
-    this.today = { Year: d.getFullYear(), Month: ("00" + (d.getMonth() + 1)).slice(-2), day: ("00" + d.getDate()).slice(-2) }
+    this.today = { Year: d.getFullYear(), Month: ("00" + (d.getMonth() + 1)).slice(-2), Day: ("00" + d.getDate()).slice(-2) }
     this.currentDay = { Year: d.getFullYear(), Month: (d.getMonth() + 1) }
     this.selectedMenu = 'MAINPAGE'
     this.renderMenu()
   },
 
   renderMenu() {
+
     this.handledData = {}
     this.handledDataAdj = NaN
+    MenuView.setActiveMenu(this.selectedMenu)
     if (this.selectedMenu === 'MAINPAGE') {
-    this.fetchContent()
+      this.fetchContent()
     } else if (this.selectedMenu === 'ROUTINE') {
       this.fetchRoutine()
     } else {
@@ -78,6 +82,7 @@ export default {
 
   fetchContent() {
     RoutineModel.list().then(data => {
+      // TimerView.el.style.animation = "rotate 1s ease"
       WorkoutView.hide()
       RoutineView.hide()
       CalendarView.hide()
@@ -86,6 +91,9 @@ export default {
       TimerView.show()
       ContentsView.show()
       ContentsView.render(data)
+      // animateCSS('.contents', 'slideInRight')
+      // animateCSS('.timer', 'slideInRight')
+      // animateCSS('.bottom_menu', 'slideInRight')
     })
   },
 
@@ -94,7 +102,7 @@ export default {
     CalendarView.hide()
     SettingView.hide()
     ContentsView.hide()
-    MenuView.show()
+    MenuView.hide()
     TimerView.show()
     WorkoutView.show()
     WorkoutView.render(this.workoutData)
@@ -102,19 +110,21 @@ export default {
 
   fetchRoutine() {
     RoutineModel.list().then(data => {
+      ContentsView.viewOut()
       WorkoutView.hide()
-      ContentsView.hide()
+      // ContentsView.hide()
       CalendarView.hide()
       SettingView.hide()
       TimerView.hide()
-      MenuView.show()
-      RoutineView.show()
-      RoutineView.render(data)
+      // MenuView.show()
+      // RoutineView.show()
+      // RoutineView.render(data)
     })
   },
 
   fetchCalendar() {
     HistoryModel.list().then(data => {
+
       const DataForRender = this.getHistoryData(data) // [9,10,21,30] Array 형식 key값 반환
       WorkoutView.hide()
       ContentsView.hide()
@@ -140,7 +150,7 @@ export default {
       SettingView.render(data, keyword, adj)
     }
   },
-  
+
   fetchDetail(data, keyword = NaN, adj = NaN) {
     SettingView.hide()
     DetailView.show()
@@ -152,25 +162,23 @@ export default {
       DetailView.render(data, keyword, adj)
     }
   },
-  
+
   ////////////////////////////////////////////////////////////////////////////
   ///////////////////// Contents & Routine View Function /////////////////////
   ////////////////////////////////////////////////////////////////////////////
   onStart(keyword) {
-    console.log(tag, 'onStart()', keyword)
+    TimerView.render(true)
     this.workoutData = JSON.parse(JSON.stringify(RoutineModel.data[keyword]))
     this.fetchWorkOut()
   },
-  
+
   onAdjust(keyword) {
-    console.log(tag, 'onAdjust()', keyword)
     this.handledData = JSON.parse(JSON.stringify(RoutineModel.data[keyword]))
     this.handledDataAdj = keyword
     this.fetchSetting(this.handledData, keyword, keyword)
   },
 
   onRemove(keyword) {
-    console.log(tag, 'onRemove()', keyword)
     if (confirm('해당 항목을 삭제하시겠습니까?') == true) {
       const key = keyword.keyword
       if (keyword.index === undefined) {
@@ -193,13 +201,28 @@ export default {
     this.handledDataAdj = NaN
     this.fetchSetting(this.handledData, index)
   },
-    ////////////////////////////////////////////////////////////////////////////
-  //////////////////////////// DetailView Function ///////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  //////////////////////////// WorkoutView Function ///////////////////////////
   ////////////////////////////////////////////////////////////////////////////
   onStartTimer() {
-
+    TimerView.run()
   },
 
+  onStopTimer(e) {
+    TimerView.render()
+    TimerView.stop()
+    e ? TimerView.run(e) : TimerView.run()
+  },
+
+  onEndWorkout(e) {
+    TimerView.render(true)
+    const YEAR = this.today.Year
+    const MONTH = +this.today.Month
+    const DAY = +this.today.Day
+    HistoryModel.add(YEAR, MONTH, DAY, e)
+    this.selectedMenu = "CALENDAR"
+    this.renderMenu()
+  },
   ////////////////////////////////////////////////////////////////////////////
   /////////////////////////// SettingView Function //////////////////////////
   ////////////////////////////////////////////////////////////////////////////
@@ -225,7 +248,7 @@ export default {
   onPushDetail(e) {
     const index = e.keyword
     if (this.handledData.detail.some(item => item.name === e.data.name)) {
-      return console.error('해당 이름의 Routine이 이미 존재합니다')
+      return error('이미 같은 이름이 존재합니다')
     } else {
       this.handledData.detail.push(e.data)
       this.fetchSetting(this.handledData, index.keyword)
@@ -237,6 +260,7 @@ export default {
     this.handledData.detail[e.adj] = e.data
     this.fetchSetting(this.handledData, index)
   },
+
   ////////////////////////////////////////////////////////////////////////////
   /////////////////////////// CalendarView Function //////////////////////////
   ////////////////////////////////////////////////////////////////////////////
@@ -255,7 +279,6 @@ export default {
   },
 
   getHistoryData(data, Bottom = false) {
-    // for renderBottom
     if (Bottom) {
       const Year = Bottom.callYear
       const Month = Bottom.callMonth
@@ -266,7 +289,6 @@ export default {
       return data[Year][Month] == undefined ? undefined :
         (data[Year][Month][Day] == undefined ? undefined : data[Year][Month][Day])
     }
-    // for renderTop
     const Year = this.currentDay.Year
     const Month = +this.currentDay.Month
     if (data[Year] == undefined) {
@@ -283,14 +305,4 @@ export default {
     HistoryModel.remove(RYear, RMonth, RDay, keyword)
     this.giveHistoryData({ callYear: RYear, callMonth: RMonth, e: RDay })
   },
-
-
-
-
-
-
-  //debugfunction
-  check(keyword) {
-  debugger
-  }
 }

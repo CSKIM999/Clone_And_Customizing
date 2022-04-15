@@ -49,8 +49,8 @@ CalendarView.renderBottom = function (data = undefined) {
 }
 
 CalendarView.getCalendarHTML = function (fromDay, nowDay) {
-  const beforeDate = fromDay.getDate() //날짜
-  const beforeDay = fromDay.getDay() //요일
+  const beforeDate = fromDay.getDate()
+  const beforeDay = fromDay.getDay()
   const afterDate = nowDay.getDate()
   const afterDay = nowDay.getDay()
   let returnHTML = '<ul><li class = "calendarColumn">'
@@ -109,7 +109,6 @@ CalendarView.bindClickEvent = function () {
 
 CalendarView.onClickDate = function (e) {
   event.stopImmediatePropagation()
-  console.log(tag, "onClickDate()", e)
   if (e.className === 'exist') {
     const callYear = this.currentYear
     const callMonth = this.currentMonth + 1
@@ -133,8 +132,6 @@ CalendarView.onClickDate = function (e) {
 }
 CalendarView.onClickBtn = function (e) {
   event.stopImmediatePropagation()
-  console.log(tag, "onClickDate()", e)
-  // e.className === 'dateToggle' ? this.selectedDay = 0 : ''
   this.selectedDay = 0
   this.el.querySelector('#calendarDetailCover').className = 'detail'
   this.el.querySelector('#calendarDetail').className = 'none'
@@ -149,14 +146,12 @@ CalendarView.onClickBtn = function (e) {
 }
 
 CalendarView.onClick = function (e) {
-  console.log(tag,'onclick()')
   Array.from(this.el.querySelectorAll('#calendarDetail #routine_detail')).forEach(div => {
     event.stopPropagation()
     div.parentElement.parentElement.dataset['keyword'] === e.dataset.keyword ? (div.className == 'none' ? div.className = 'detail' : div.className = 'none') : ''
   })
 }
 CalendarView.onRemoveHistory = function (e) {
-  console.log(tag,"onRemoveHistory()")
   if (confirm('정말 해당 기록을 삭제하시겠습니까??') == true) {
     const callYear = this.currentYear
     const callMonth = this.currentMonth + 1
@@ -164,7 +159,7 @@ CalendarView.onRemoveHistory = function (e) {
     const keyword = e.dataset.keyword
     this.emit('@remove', { callYear, callMonth, callDay, keyword })
   } else {
-    return 
+    return
   }
 }
 

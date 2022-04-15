@@ -13,4 +13,4 @@ App Customizing&Clone Mini project
 * DB [ 원하는 루틴을 설정하고 그것을 DB 에 저장 ]
 
 #### CalendarPage
-* Calender [ 달력을 출력하고 운동한 날과 그날의 루틴을 출력 ]
+* Calendar [ 달력을 출력하고 운동한 날과 그날의 루틴을 출력 ]

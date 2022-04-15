@@ -5,26 +5,25 @@ const tag = '[ContentsView]'
 const ContentsView = Object.create(View)
 
 ContentsView.message = {
-  NO_ROUTINE : "저장된 정보가 없습니다"
+  NO_ROUTINE: "저장된 정보가 없습니다"
 }
 
-ContentsView.setup = function(el) {
-  // console.log(tag,'setup()')
+ContentsView.setup = function (el) {
   this.init(el)
   this.show()
-  
+
   return this
 }
 
-ContentsView.render = function(data = []) {
-  console.log(tag,"ContentsView.render()")
+ContentsView.render = function (data = []) {
+  this.el.style.animation = "slideInLeft 0.5s ease-in-out"
   this.el.innerHTML = data.length ? this.getContentHtml(data) : this.message.NO_ROUTINE
   this.bindClickEvent()
   this.show()
   return this
 }
 
-ContentsView.getContentHtml = function(data) {
+ContentsView.getContentHtml = function (data) {
   return data.reduce((html, item, index) => {
     html += `<li data-keyword="${index}" id = "routine_contents">
     <div id = "clickable">
@@ -33,22 +32,21 @@ ContentsView.getContentHtml = function(data) {
     <div class ='none' id = 'routine_detail'>${this.spreadItem(item)}</div></div>
     <ul id = "routine_btns"><li class="routine_remove">RM</li>
     <li class="routine_adjust">ADJ</li>
-    <li class="routine_start"></li></ul></li>`
+    <li class="routine_start">START</li></ul></li>`
     return html
-  }, "<span class = 'contents' id = 'contents_guide'>CSKIM with MVC</span><ul>") + '</ul>'
-  // }, "<ul>") + '</ul>'
+}, "<span id = 'contents_guide'>CSKIM with MVC</span><ul>") + '</ul>'
 }
 
-ContentsView.spreadItem = function(data = []){
-  return data.detail.reduce((html,item) => {
+ContentsView.spreadItem = function (data = []) {
+  return data.detail.reduce((html, item) => {
     html += `<li>${item.name}&nbsp;&nbsp;${item.routine.item.length}SET</li>`
     return html
-  },'<ul>')+'</ul>'
-  
+  }, '<ul>') + '</ul>'
+
 }
 
 
-ContentsView.bindClickEvent = function() {
+ContentsView.bindClickEvent = function () {
   Array.from(this.el.querySelectorAll('li .routine_remove')).forEach(li => {
     li.addEventListener('click', e => this.onRemoveContents(li.parentElement.parentElement))
   })
@@ -62,31 +60,33 @@ ContentsView.bindClickEvent = function() {
     div.addEventListener('click', e => this.onClick(div.parentElement))
   })
 }
-ContentsView.activeRoutineDetail = function(e){
+ContentsView.activeRoutineDetail = function (e) {
   this.show()
-  Array.from(this.el.querySelectorAll('.contents #routine_detail')).forEach(li =>{
+  Array.from(this.el.querySelectorAll('.contents #routine_detail')).forEach(li => {
     li.parentElement.parentElement.dataset['keyword'] === e ? (li.className == 'none' ? li.className = 'detail' : li.className = 'none') : false
   })
 }
 
 
 
-ContentsView.onRemoveContents = function(e) {
-  const {keyword} = e.dataset
-  this.emit('@remove', {keyword})
+ContentsView.onRemoveContents = function (e) {
+  const { keyword } = e.dataset
+  this.emit('@remove', { keyword })
 }
-ContentsView.onAdjustContent = function(e) {
-  const {keyword} = e.dataset
-  this.emit('@adjust', {keyword})
+ContentsView.onAdjustContent = function (e) {
+  const { keyword } = e.dataset
+  this.emit('@adjust', { keyword })
 }
-ContentsView.onStartContents = function(e) {
-  const {keyword} = e.dataset
-  this.emit('@start', {keyword})
+ContentsView.onStartContents = function (e) {
+  const { keyword } = e.dataset
+  this.emit('@start', { keyword })
 }
-ContentsView.onClick = function(e){
-  const {keyword} = e.dataset
+ContentsView.onClick = function (e) {
+  const { keyword } = e.dataset
   this.activeRoutineDetail(keyword)
-
 }
 
+ContentsView.viewOut = function() {
+  this.el.style.animation = "slideOutLeft 0.5s ease-in-out forwards"
+}
 export default ContentsView

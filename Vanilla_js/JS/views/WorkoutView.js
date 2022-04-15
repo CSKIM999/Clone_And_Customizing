@@ -7,7 +7,8 @@ const WorkoutView = Object.create(View)
 
 
 WorkoutView.template = {
-  Basic : `<div class = "contents"><div class = 'detail' id = "startButton">start</div>
+  Basic: `<div class = "contents">
+  <div class = 'detail'><span id = "startButton">start</span><span id = 'cancelButton'>Cancel</span></div>
   <div class='none' id = 'stopBtns' >
   <span id = "tempStop">STOP</span>
   <span id = "endWorkout">END</span></div>
@@ -15,18 +16,18 @@ WorkoutView.template = {
   `
 }
 
-WorkoutView.setup = function(el) {
-  // console.log(tag,'setup()')
+WorkoutView.setup = function (el) {
   this.init(el)
   this.show()
   return this
 }
-WorkoutView.render = function(data = {}) {
+WorkoutView.render = function (data = {}) {
   if (data.detail.length === 0) {
     alert('루틴에 포함된 운동이 없습니다!')
-    this.emit('@error',{})
+    this.emit('@error', {})
     return
   }
+  this.startToggle = true
   this.handleData = data
   this.el.innerHTML = WorkoutView.template.Basic
   this.el.querySelector('#workoutContents').innerHTML = this.getWorkoutHtml(this.handleData)
@@ -34,93 +35,137 @@ WorkoutView.render = function(data = {}) {
   this.show()
   return this
 }
-WorkoutView.getWorkoutHtml = function(data ={}) {
+WorkoutView.getWorkoutHtml = function (data = {}) {
   return `
   <ul><li><span>${data.name}</span></li>
-  ${data.detail.reduce((html,item,index) => {
-    return html += `<li data-keyword = '${index}' id = 'routine_contents'
+  ${data.detail.reduce((html, item, index) => {
+    return html += `<li data-keyword = '${index}' id = 'routine_contents'>
+
     <div id = 'workout_text'>
-    <span id='contentsName'>${item.name}</span>
-    <span id ='workoutWeight'>${item.routine.item[0][0]}kg</span>
+    <span id = 'contentsName'>${item.name}</span>
+    <span>
+    <span class = 'detail' id = 'duringWorkout'>
+    <span id = 'workoutWeight'>${item.routine.item[0][0]}kg</span>
     <span id = 'workoutReps'>x ${item.routine.item[0][1]} 개</span>
     <span id = 'workoutSet'><span>1</span> SET</span>
+    </span>
+    <span class = 'none' id = 'workoutDone' >완료</span>
+    </span>
     </div>
+
     <div class = 'workoutCount'>
     <span id = 'workoutCountDisplay'>
-    ${item.routine.item.reduce((innerhtml,inneritem,innerindex) => {
-      return innerhtml += `<span data-keyword="${innerindex}" class>${innerindex+1}</span>`
-    },'')}</span>
+    ${item.routine.item.reduce((innerhtml, inneritem, innerindex) => {
+      return innerhtml += `<span data-keyword="${innerindex}" class>${innerindex + 1}</span>`
+    }, '')}
+    </span>
     <button id = 'adjustBtn'>-1</button>
+    
     </div></li>
     `
-  },'')
-  }
+  }, '')
+    }
   </ul>
   `
 }
 
 
 
-WorkoutView.bindClickEvent = function() {
-  this.el.querySelector('#startButton').addEventListener('click',e=>this.onStart())
-  this.el.querySelector('#tempStop').addEventListener('click',e=>this.onStop())
-  this.el.querySelector('#endWorkout').addEventListener('click',e=>this.onEnd())
-  Array.from(this.el.querySelectorAll('#routine_contents')).forEach(li =>{
-    li.addEventListener('click',e=>this.onClick(e.currentTarget))
+WorkoutView.bindClickEvent = function () {
+  this.el.querySelector('#startButton').addEventListener('click', e => this.onStart())
+  this.el.querySelector('#cancelButton').addEventListener('click', e => this.onCancel())
+  this.el.querySelector('#tempStop').addEventListener('click', e => this.onStop())
+  this.el.querySelector('#endWorkout').addEventListener('click', e => this.onEnd())
+  Array.from(this.el.querySelectorAll('#routine_contents')).forEach(li => {
+    li.addEventListener('click', e => this.onClick(e.currentTarget))
   })
   Array.from(this.el.querySelectorAll('#adjustBtn')).forEach(button => {
-    button.addEventListener('click',e=>this.check())
+    button.addEventListener('click', e => this.onAdjust(e.currentTarget.parentElement.parentElement))
   })
 }
 
 
-WorkoutView.onStart = function() {
-  console.log(tag,'onStart() to TimerView')
-  this.el.querySelector('#startButton').className = 'none'
+WorkoutView.onStart = function () {
+  this.el.querySelector('#startButton').parentElement.className = 'none'
   this.el.querySelector('#stopBtns').className = 'detail'
-  
-  //todo... timer start, menuview hide
-  this.emit('@start',{})
+  this.startToggle = false
+  this.emit('@start', {})
 }
 
-WorkoutView.onStop = function() {
-  console.log(tag,'onStop()')
-  this.emit('@stop')
-}
-WorkoutView.onEnd = function() {
-  console.log(tag,'onEND()',this.handleData)
-  
-  //todo... save handle data , show menuview
-  this.emit('@save',this.handleData)
-}
-
-WorkoutView.onClick = function(e) {
-  console.log(tag, 'onClick()')
-  // todo... plus workoutcount
-  const keyword = e.dataset.keyword
-  const count = +e.querySelector('#workoutSet span').textContent +1
-  if (this.handleData.detail[keyword].routine.item.length === count-1) {
+WorkoutView.onStop = function () {
+  if (this.startToggle) {
+    this.startToggle = false
+    this.el.querySelector('#tempStop').textContent = 'STOP'
+    this.emit('@tempStart')
     return
   }
-  const nowItem = this.handleData.detail[keyword].routine.item[count-2]
+  this.startToggle = true
+  this.el.querySelector('#tempStop').textContent = 'START AGAIN'
+  this.emit('@tempStop')
+}
 
-  e.querySelector('#workoutWeight').textContent = nowItem[0]+'kg'
-  e.querySelector('#workoutReps').textContent = nowItem[1]+' 개'
-  e.querySelector('#workoutSet span').textContent = count
+
+WorkoutView.onEnd = function () {
+  if (confirm('운동을 종료하시겠습니까?') == false) {
+    return
+  } else {
+    alert('수고하셨습니다!\nCalendar에서 운동내역을 확인할 수 있습니다')
+  }
+  this.startToggle = true
+  this.handleData.detail.forEach(item => {
+    const detail = item.routine.item
+    item.routine = detail
+  })
+  this.emit('@save', this.handleData)
+}
+
+WorkoutView.onClick = function (e) {
+  if (this.startToggle) {
+    return
+  }
+  const keyword = e.dataset.keyword
+  const count = +e.querySelector('#workoutSet span').textContent - 1
+  const item = this.handleData.detail[keyword].routine.item
+
+  if (item.length <= count) {
+    return
+  }
+
+  if (count + 2 > item.length) {
+    e.querySelector('#workoutSet span').textContent = item.length
+    e.querySelector('#workoutDone').className = 'detail'
+    e.querySelector('#duringWorkout').className = 'none'
+  } else {
+    e.querySelector('#workoutSet span').textContent = count < 0 ? 1 : count + 2
+  }
+
+  if (count >= 0) {
+    e.querySelector('#workoutWeight').textContent = item[count][0] + 'kg x'
+    e.querySelector('#workoutReps').textContent = item[count][1] + ' 개'
+  }
   Array.from(e.querySelectorAll('#workoutCountDisplay span')).forEach(span => {
-    span.className = span.dataset.keyword <= count-2 ? 'done' : ''
+    span.className = span.dataset.keyword <= count ? 'done' : ''
+
   })
 
 
 }
-
-
-
-
-WorkoutView.check = function() {
-  // button need event bubbling controll
+WorkoutView.onAdjust = function (e) {
+  if (this.startToggle) {
+    return
+  }
   event.stopPropagation()
-
-  console.log(tag,'CHECK()')
+  const flag = e.querySelector('#workoutDone').className
+  if (flag === 'detail') {
+    e.querySelector('#workoutDone').className = 'none'
+    e.querySelector('#duringWorkout').className = 'detail'
+  }
+  e.querySelector('#workoutSet span').textContent -= flag === 'detail' ? 1 : 2
+  this.onClick(e)
 }
+
+WorkoutView.onCancel = function () {
+  this.emit('@cancel', {})
+}
+
 export default WorkoutView
