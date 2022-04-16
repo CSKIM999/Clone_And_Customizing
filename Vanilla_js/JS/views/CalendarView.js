@@ -31,6 +31,9 @@ CalendarView.renderTop = function (data = undefined) {
   this.el.querySelector('#calendarBody').innerHTML = this.getCalendarHTML(fromDay, nowDay)
   this.el.querySelector('#currentDate').innerHTML = this.currentYear + "." + (this.currentMonth + 1)
   this.bindClickEvent()
+  const ani__target = this.el
+  ani__target.style.animation = "slideInRight 0.4s ease-in-out"
+  ani__target.classList.add('ani__run')
 }
 
 CalendarView.renderBottom = function (data = undefined) {
@@ -163,6 +166,11 @@ CalendarView.onRemoveHistory = function (e) {
   }
 }
 
+CalendarView.viewOut = function() {
+  const ani__target = this.el
+  ani__target.classList.contains('ani__run') ? '' : error
+  ani__target.style.animation = "slideOutRight 0.2s forwards"
+}
 
 
 export default CalendarView

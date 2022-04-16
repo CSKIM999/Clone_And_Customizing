@@ -12,7 +12,6 @@ import HistoryModel from "../models/HistoryModel.js"
 
 const tag = '[MainController]'
 
-
 export default {
   init() {
     TimerView.setup(document.querySelector('.timer'))
@@ -60,27 +59,56 @@ export default {
     this.renderMenu()
   },
 
-  renderMenu() {
-
-    this.handledData = {}
-    this.handledDataAdj = NaN
-    MenuView.setActiveMenu(this.selectedMenu)
-    if (this.selectedMenu === 'MAINPAGE') {
-      this.fetchContent()
-    } else if (this.selectedMenu === 'ROUTINE') {
-      this.fetchRoutine()
-    } else {
-      this.fetchCalendar()
+  renderMenu(flag = false) {
+    if (flag) {
+      const ani__target = document.querySelector('.ani__run')
+      ani__target.addEventListener('animationend',  e => { 
+        ani__target.classList.replace('ani__run','ani__end')
+        this.renderMenu()})
+      }
+    else{
+      this.handledData = {}
+      this.handledDataAdj = NaN
+      MenuView.setActiveMenu(this.selectedMenu)
+      if (this.selectedMenu === 'MAINPAGE') {
+        this.fetchContent()
+      } else if (this.selectedMenu === 'ROUTINE') {
+        this.fetchRoutine()
+      } else {
+        this.fetchCalendar()
+      }
     }
+
   },
 
   onChangeMenu(menuName) {
     MenuView.show()
     this.selectedMenu = menuName
-    this.renderMenu()
+    console.log(tag,'onChangeMenu()',this.selectedMenu)
+    if (this.selectedMenu === 'MAINPAGE') {
+      try {
+        RoutineView.viewOut(true)
+      } catch {
+        CalendarView.viewOut()
+      }
+    } else if (this.selectedMenu === 'ROUTINE') {
+      try{
+        ContentsView.viewOut()
+      } catch {
+        CalendarView.viewOut()
+      }
+    } else {
+      try {
+        RoutineView.viewOut(false)
+      } catch{
+        ContentsView.viewOut()
+      }
+    }
+    this.renderMenu(true)
   },
 
   fetchContent() {
+    
     RoutineModel.list().then(data => {
       // TimerView.el.style.animation = "rotate 1s ease"
       WorkoutView.hide()
@@ -110,21 +138,19 @@ export default {
 
   fetchRoutine() {
     RoutineModel.list().then(data => {
-      ContentsView.viewOut()
+      ContentsView.hide()
       WorkoutView.hide()
-      // ContentsView.hide()
       CalendarView.hide()
       SettingView.hide()
       TimerView.hide()
-      // MenuView.show()
-      // RoutineView.show()
-      // RoutineView.render(data)
+      MenuView.show()
+      RoutineView.show()
+      RoutineView.render(data)
     })
   },
 
   fetchCalendar() {
     HistoryModel.list().then(data => {
-
       const DataForRender = this.getHistoryData(data) // [9,10,21,30] Array 형식 key값 반환
       WorkoutView.hide()
       ContentsView.hide()
@@ -305,4 +331,15 @@ export default {
     HistoryModel.remove(RYear, RMonth, RDay, keyword)
     this.giveHistoryData({ callYear: RYear, callMonth: RMonth, e: RDay })
   },
+
+  // animateControll(fromView) {
+  //   const ani__target = document.querySelector('.ani__run')
+  //   ani__target.addEventListener('animationend',  e => { 
+  //     document.querySelector('.ani__run').classList.replace('ani__run','ani__end').then(fromView.viewOut())
+  //   })
+  // },
+  
+  check() {
+    debugger
+  }
 }

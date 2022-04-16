@@ -16,10 +16,13 @@ ContentsView.setup = function (el) {
 }
 
 ContentsView.render = function (data = []) {
-  this.el.style.animation = "slideInLeft 0.5s ease-in-out"
+  
   this.el.innerHTML = data.length ? this.getContentHtml(data) : this.message.NO_ROUTINE
   this.bindClickEvent()
   this.show()
+  const ani__target = this.el
+  ani__target.style.animation = "slideInLeft 0.4s ease-in-out"
+  ani__target.classList.add('ani__run')
   return this
 }
 
@@ -87,6 +90,8 @@ ContentsView.onClick = function (e) {
 }
 
 ContentsView.viewOut = function() {
-  this.el.style.animation = "slideOutLeft 0.5s ease-in-out forwards"
+  const ani__target = this.el
+  ani__target.classList.contains('ani__run') ? '' : error
+  ani__target.style.animation = "slideOutLeft 0.2s forwards"
 }
 export default ContentsView

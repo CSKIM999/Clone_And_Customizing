@@ -18,6 +18,10 @@ RoutineView.render = function (data = []) {
   this.el.innerHTML = data.length ? this.getRoutineHtml(data) : this.noData()
   this.bindClickEvent()
   this.show()
+  const ani__target = this.el.querySelector('#routine_contents_margin')
+  ani__target.style.animation = "slideInRight 0.4s ease-in-out"
+  ani__target.classList.add('ani__run')
+  
 
   return this
 }
@@ -105,6 +109,14 @@ RoutineView.onClick = function (e) {
   this.activeRoutineDetail(keyword)
 }
 
-
+RoutineView.viewOut = function(lr = false) {
+  const ani__target = this.el.querySelector('#routine_contents_margin')
+  ani__target.classList.contains('ani__run') ? '' : error
+  if (lr) {
+    ani__target.style.animation = "slideOutRight 0.2s forwards"
+  } else{
+    ani__target.style.animation = "slideOutLeftM 0.2s forwards"
+  }
+}
 
 export default RoutineView
