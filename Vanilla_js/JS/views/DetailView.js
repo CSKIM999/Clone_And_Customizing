@@ -40,6 +40,10 @@ DetailView.render = function (data = [], keyword = NaN, adj = NaN) {
   this.el.innerHTML = this.template.Setting + this.getDetailHtml(this.data)
   this.setActiveToggle()
   this.bindClickEvent()
+  const ani__target = this.el
+  ani__target.style.animation = 'slideUp 0.4s ease'
+  ani__target.classList.add('ani__run')
+
   return this
 }
 
@@ -72,9 +76,9 @@ DetailView.getDetailHtml = function () {
 
 DetailView.bindClickEvent = function () {
   this.el.querySelector('#detailName').addEventListener('change', e => this.data.name = e.currentTarget.value)
-  this.el.querySelector('#setting_cancel').addEventListener('click', e => this.onCancel(e))
+  this.el.querySelector('#setting_cancel').addEventListener('click', e => this.viewOut())
   isNaN(this.checkAdjust) ? this.el.querySelector('#setting_save').addEventListener('click', e => this.onSaveDetail()) :
-    this.el.querySelector('#setting_save').addEventListener('click', e => this.onAdjDetail())
+    this.el.querySelector('#setting_save').addEventListener('click', e => this.viewOut(true))
   this.el.querySelector('#setCount').addEventListener('change', e => this.changeValue(e))
   Array.from(this.el.querySelectorAll('.toggleTop span')).forEach(span => {
     span.addEventListener('click', e => this.changeValue(span))
@@ -159,7 +163,10 @@ DetailView.changeValue = function (e) {
 }
 
 
-DetailView.onCancel = function () {
+DetailView.onCancel = function (e) {
+  if (e.animationName === 'slideUp') {
+    return
+  }
   this.emit('@cancel', {})
 }
 
@@ -172,8 +179,11 @@ DetailView.datahandling = function () {
   }
 }
 
-DetailView.onSaveDetail = function () {
+DetailView.onSaveDetail = function (e) {
   event.stopPropagation()
+  if (e.animationName === 'slideUp') {
+    return
+  }
   if (this.checkKeyword === undefined) { debugger }
   DetailView.datahandling(this.data)
   const keyword = this.checkKeyword
@@ -189,6 +199,17 @@ DetailView.onAdjDetail = function () {
   const adj = this.checkAdjust
   const data = this.data
   this.data.name === '' ? alert('운동 이름을 입력해주세요') : this.emit('@adjust', { data, keyword, adj })
+}
+
+DetailView.viewOut = function(SaveOrCancel) {
+  const ani__target = this.el
+  ani__target.style.animation = "slideDown 0.3s forwards"
+  // ani__target.classList.contains('ani__run') ? '' : console.error(tag);
+  if (SaveOrCancel) {
+    ani__target.addEventListener('animationend', e=> this.onSave(e))
+  } else{
+    ani__target.addEventListener('animationend', e=> this.onCancel(e))
+  }
 }
 
 

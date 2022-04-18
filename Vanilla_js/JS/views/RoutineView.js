@@ -62,8 +62,18 @@ RoutineView.spreadItem = function (data = []) {
 
 RoutineView.activeRoutineDetail = function (routineIndex) {
   this.show()
-  Array.from(this.el.querySelectorAll('#routine_detail')).forEach(li => {
-    li.parentElement.dataset['keyword'] == routineIndex ? (li.className == 'none' ? li.className = 'detail' : li.className = 'none') : false
+  Array.from(this.el.querySelectorAll('.routines #routine_detail ul')).forEach(ul => {
+    // li.parentElement.dataset['keyword'] == routineIndex ? (li.className == 'none' ? li.className = 'detail' : li.className = 'none') : false
+    if (ul.parentElement.parentElement.parentElement.dataset['keyword'] === routineIndex) {
+      if (ul.parentElement.classList.contains('none')) {
+        ul.parentElement.classList.replace('none','detail') 
+        ul.parentElement.style.animation='dropDown 0.1s ease-In'
+      } else {
+        ul.parentElement.style.animation='dropUp 0.2s ease-In Forwards'
+        setTimeout(() => ul.parentElement.classList.replace('detail','none'),200)
+      }
+      ul.parentElement.style.transition = '0.5s ease'
+    }
   })
 }
 
@@ -82,7 +92,7 @@ RoutineView.bindClickEvent = function () {
     span.addEventListener('click', e => this.onAddRoutine(span.parentElement.parentElement))
   })
   Array.from(this.el.querySelectorAll('#clickable')).forEach(div => {
-    div.addEventListener('click', e => this.onClick(div.parentElement.parentElement))
+    div.addEventListener('click', e => this.onClick(div.parentElement))
   })
 }
 
@@ -109,10 +119,10 @@ RoutineView.onClick = function (e) {
   this.activeRoutineDetail(keyword)
 }
 
-RoutineView.viewOut = function(lr = false) {
+RoutineView.viewOut = function(leftOrRight = false) {
   const ani__target = this.el.querySelector('#routine_contents_margin')
-  ani__target.classList.contains('ani__run') ? '' : error
-  if (lr) {
+  // ani__target.classList.contains('ani__run') ? '' : console.error(tag);
+  if (leftOrRight) {
     ani__target.style.animation = "slideOutRight 0.2s forwards"
   } else{
     ani__target.style.animation = "slideOutLeftM 0.2s forwards"

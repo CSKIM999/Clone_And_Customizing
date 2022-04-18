@@ -56,17 +56,23 @@ export default {
     this.today = { Year: d.getFullYear(), Month: ("00" + (d.getMonth() + 1)).slice(-2), Day: ("00" + d.getDate()).slice(-2) }
     this.currentDay = { Year: d.getFullYear(), Month: (d.getMonth() + 1) }
     this.selectedMenu = 'MAINPAGE'
+    this.menuHist = 'ROUTINE'
+    this.fetchRoutine()
     this.renderMenu()
   },
 
   renderMenu(flag = false) {
-    if (flag) {
+    if (flag) { // Animation 있을때 재귀
       const ani__target = document.querySelector('.ani__run')
       ani__target.addEventListener('animationend',  e => { 
+        if (e.animationName === 'dropDown' || e.animationName ==='slideDown' || e.animationName === 'slideUp') {
+          return
+        }
         ani__target.classList.replace('ani__run','ani__end')
         this.renderMenu()})
       }
-    else{
+
+    else{ //Vanilla
       this.handledData = {}
       this.handledDataAdj = NaN
       MenuView.setActiveMenu(this.selectedMenu)
@@ -82,27 +88,30 @@ export default {
   },
 
   onChangeMenu(menuName) {
-    MenuView.show()
+    // ContentsView - start => endWorkout => CalendarView ERROR
+    if (this.selectedMenu === menuName) {
+      return
+    }
+    this.menuHist = this.selectedMenu
     this.selectedMenu = menuName
-    console.log(tag,'onChangeMenu()',this.selectedMenu)
-    if (this.selectedMenu === 'MAINPAGE') {
-      try {
-        RoutineView.viewOut(true)
-      } catch {
-        CalendarView.viewOut()
-      }
+    if (this.selectedMenu === 'MAINPAGE') { 
+      this.menuHist === 'ROUTINE' ? RoutineView.viewOut(true) : CalendarView.viewOut()
     } else if (this.selectedMenu === 'ROUTINE') {
-      try{
-        ContentsView.viewOut()
-      } catch {
-        CalendarView.viewOut()
-      }
+      this.menuHist === 'MAINPAGE' ? ContentsView.viewOut(true) : CalendarView.viewOut()
+      // try{
+      //   ContentsView.viewOut()
+      // } catch {
+      //   CalendarView.viewOut()
+      // }
+
     } else {
-      try {
-        RoutineView.viewOut(false)
-      } catch{
-        ContentsView.viewOut()
-      }
+      this.menuHist === 'ROUTINE' ? RoutineView.viewOut(true) : ContentsView.viewOut()
+      // try {
+      //   RoutineView.viewOut(false)
+      // } catch{
+      //   ContentsView.viewOut()
+      // }
+
     }
     this.renderMenu(true)
   },

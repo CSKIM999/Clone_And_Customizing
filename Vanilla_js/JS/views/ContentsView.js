@@ -28,14 +28,14 @@ ContentsView.render = function (data = []) {
 
 ContentsView.getContentHtml = function (data) {
   return data.reduce((html, item, index) => {
-    html += `<li data-keyword="${index}" id = "routine_contents">
-    <div id = "clickable">
+    html += `<ul data-keyword="${index}" id = "routine_contents">
+    <li class = "clickable">
     <div id = "routine_text">${item.name}
-    <div id = "routine_count">${Object.keys(item.detail).length} Workouts</div></div>
-    <div class ='none' id = 'routine_detail'>${this.spreadItem(item)}</div></div>
+    <div id = "routine_count">${Object.keys(item.detail).length} Workouts</div></div></li>
+    <li class ='none clickable' id = 'routine_detail'>${this.spreadItem(item)}</li>
     <ul id = "routine_btns"><li class="routine_remove">RM</li>
     <li class="routine_adjust">ADJ</li>
-    <li class="routine_start">START</li></ul></li>`
+    <li class="routine_start">START</li></ul></ul>`
     return html
 }, "<span id = 'contents_guide'>CSKIM with MVC</span><ul>") + '</ul>'
 }
@@ -50,23 +50,34 @@ ContentsView.spreadItem = function (data = []) {
 
 
 ContentsView.bindClickEvent = function () {
-  Array.from(this.el.querySelectorAll('li .routine_remove')).forEach(li => {
+  Array.from(this.el.querySelectorAll('ul .routine_remove')).forEach(li => {
     li.addEventListener('click', e => this.onRemoveContents(li.parentElement.parentElement))
   })
-  Array.from(this.el.querySelectorAll('li .routine_adjust')).forEach(li => {
+  Array.from(this.el.querySelectorAll('ul .routine_adjust')).forEach(li => {
     li.addEventListener('click', e => this.onAdjustContent(li.parentElement.parentElement))
   })
-  Array.from(this.el.querySelectorAll('li .routine_start')).forEach(li => {
+  Array.from(this.el.querySelectorAll('ul .routine_start')).forEach(li => {
     li.addEventListener('click', e => this.onStartContents(li.parentElement.parentElement))
   })
-  Array.from(this.el.querySelectorAll('#clickable')).forEach(div => {
-    div.addEventListener('click', e => this.onClick(div.parentElement))
+  Array.from(this.el.querySelectorAll('.clickable')).forEach(li => {
+    li.addEventListener('click', e => this.onClick(li.parentElement))
   })
 }
 ContentsView.activeRoutineDetail = function (e) {
-  this.show()
   Array.from(this.el.querySelectorAll('.contents #routine_detail')).forEach(li => {
-    li.parentElement.parentElement.dataset['keyword'] === e ? (li.className == 'none' ? li.className = 'detail' : li.className = 'none') : false
+    if (li.parentElement.dataset['keyword'] === e) {
+      if (li.classList.contains('none')) {
+        li.classList.replace('none','detail') 
+        li.style.animation='dropDown 0.1s ease-In'
+      } else {
+        li.style.animation='dropUp 0.2s ease-In Forwards'
+        setTimeout(() => li.classList.replace('detail','none'),200)
+      }
+      li.style.transition = '0.5s ease'
+
+    }
+    // li.style.animation='dissapear 0.5s ease forwards'
+    // li.parentElement.parentElement.parentElement.style.animation = 'dragDown 1s ease'
   })
 }
 
@@ -86,12 +97,13 @@ ContentsView.onStartContents = function (e) {
 }
 ContentsView.onClick = function (e) {
   const { keyword } = e.dataset
+  
   this.activeRoutineDetail(keyword)
 }
 
 ContentsView.viewOut = function() {
   const ani__target = this.el
-  ani__target.classList.contains('ani__run') ? '' : error
+  // ani__target.classList.contains('ani__run') ? '' : console.error(tag);
   ani__target.style.animation = "slideOutLeft 0.2s forwards"
 }
 export default ContentsView

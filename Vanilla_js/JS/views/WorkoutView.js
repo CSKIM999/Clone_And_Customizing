@@ -33,6 +33,9 @@ WorkoutView.render = function (data = {}) {
   this.el.querySelector('#workoutContents').innerHTML = this.getWorkoutHtml(this.handleData)
   this.bindClickEvent()
   this.show()
+  const ani__target = this.el.querySelector('.workout .contents')
+  ani__target.style.animation = 'slideUp 0.4s ease'
+
   return this
 }
 WorkoutView.getWorkoutHtml = function (data = {}) {
@@ -73,9 +76,9 @@ WorkoutView.getWorkoutHtml = function (data = {}) {
 
 WorkoutView.bindClickEvent = function () {
   this.el.querySelector('#startButton').addEventListener('click', e => this.onStart())
-  this.el.querySelector('#cancelButton').addEventListener('click', e => this.onCancel())
+  this.el.querySelector('#cancelButton').addEventListener('click', e => this.viewOut())
   this.el.querySelector('#tempStop').addEventListener('click', e => this.onStop())
-  this.el.querySelector('#endWorkout').addEventListener('click', e => this.onEnd())
+  this.el.querySelector('#endWorkout').addEventListener('click', e => this.viewOut(true))
   Array.from(this.el.querySelectorAll('#routine_contents')).forEach(li => {
     li.addEventListener('click', e => this.onClick(e.currentTarget))
   })
@@ -105,12 +108,19 @@ WorkoutView.onStop = function () {
 }
 
 
-WorkoutView.onEnd = function () {
-  if (confirm('운동을 종료하시겠습니까?') == false) {
+WorkoutView.onEnd = function (e) {
+  event.stopImmediatePropagation()
+  if (e.animationName === 'slideUp') {
     return
-  } else {
-    alert('수고하셨습니다!\nCalendar에서 운동내역을 확인할 수 있습니다')
   }
+  // if (confirm('운동을 종료하시겠습니까?') == false) {
+  //   const ani__target = this.el.querySelector('.workout .contents')
+  //   ani__target.style.animation = "slideUp 0.5s forwards"
+  //   return
+  // } else {
+  //   alert('수고하셨습니다!\nCalendar에서 운동내역을 확인할 수 있습니다')
+  // }
+  
   this.startToggle = true
   this.handleData.detail.forEach(item => {
     const detail = item.routine.item
@@ -164,8 +174,28 @@ WorkoutView.onAdjust = function (e) {
   this.onClick(e)
 }
 
-WorkoutView.onCancel = function () {
+WorkoutView.onCancel = function (e) {
+  if (e.animationName === 'slideUp') {
+    return
+  }
   this.emit('@cancel', {})
 }
 
+WorkoutView.viewOut = function(SaveOrCancel=false) {
+  if (SaveOrCancel) {
+    if (confirm('운동을 종료하시겠습니까?') == false) {
+        return
+      } else {
+        alert('수고하셨습니다!\nCalendar에서 운동내역을 확인할 수 있습니다')
+      }
+  }
+
+  const ani__target = this.el.querySelector('.workout .contents')
+  ani__target.style.animation = "slideDown 0.3s forwards"
+
+  if (SaveOrCancel) {
+    ani__target.addEventListener('animationend', e=> this.onEnd(e))
+  } else{
+    ani__target.addEventListener('animationend', e=> this.onCancel(e))
+  }}
 export default WorkoutView

@@ -1,6 +1,6 @@
 @keyframes slideInRight {
     0% {
-        margin-left: 100%;
+        margin-left: 130%;
     }
     25%{
         margin-left: 100%;
@@ -92,11 +92,68 @@
     }
 }
 
+@keyframes dropDown {
+    0% {
+        transform: scaleY(0.1) translateY(-10%);
+        max-height: 0;
+      }
+    75% {
+        transform: scaleY(1.05);
+    }
+    100% {
+        transform: scaleY(1);
+        max-height: 500px;
+    }
+}
+@keyframes dropUp {
+    0% {
+        transform: scaleY(1.05);
+        max-height: 500px;
+      }
+    75% {
+        transform: scaleY(1);
+    }
+    100% {
+        transform: scaleY(0);
+        max-height: 0;
+    }
+}
+@keyframes slideUp {
+    0% {
+        margin-top: 100%;
+    }
+    75% {
+        margin-top: -2%;
+    }
+    100% {
+        margin-top: 0%;
+    }
+}
+@keyframes slideDown {
+    0% {
+        margin-top: 0%;
+    }
+    15% {
+        margin-top: -3%;
+    }
+    100% {
+        margin-top: 200%;
+    }
+}
+
+:root {
+    --header--color : rgb(15, 76, 117);
+    --backgroud--color  : rgb(27, 38, 44);
+    --font--color : rgb(187, 225, 250);
+    --detail--color : rgb(50, 130, 184);
+}
+
 body {
     margin: 0;
     padding: 0;
+    color: var(--font--color);
+    background-color: var(--backgroud--color);;
     /* padding-top: 9vh; */
-    padding-bottom: 9vh;
 }
 
 ul {
@@ -109,21 +166,24 @@ ul {
     position: fixed;
     width: 100%;
     top: 0;
-    background-color: cornflowerblue;
+    background-color: var(--header--color);
     font-size: 3vh;
     border-bottom: 2px solid;
     height: 5vh;
     padding-top: 2vh;
     text-align: center;
     padding-bottom: 2vh;
+    font-size: large;
+    font-weight: bolder;
 }
 
 /* Menu click */
 .none {
     display: none;
+    max-height: 0;
 }
 .detail {
-    display: "";
+    display: block;
 }
 .done {
     background-color: rebeccapurple;
@@ -150,6 +210,7 @@ ul {
     position: fixed;
 }
 #routine_contents {
+    background-color: var(--detail--color);
     margin: 2vh;
     border: 1px solid;
     border-radius: 20px;
@@ -176,10 +237,12 @@ ul {
     top: 0;
     position: fixed;
     margin: 0;
-    height: 11vh;
+    height: 9vh;
     text-align: center;
-    background-color: cornflowerblue;
-    border-bottom: 1px solid black;
+    background-color: var(--header--color);
+    border-bottom: 2px solid;
+    font-size: large;
+    font-weight: bolder;
 }
 #routines_header ul {
     margin-top: 1vh;
@@ -207,7 +270,9 @@ ul {
 }
 #routine_detail {
     padding: 1vh;
+    overflow: hidden;
 }
+
 #routine_detail ul {
     list-style: none;
 }
@@ -223,6 +288,8 @@ ul {
     list-style: none;
     width: 100%;
     background-color: cornflowerblue;
+    font-size: large;
+    font-weight: bolder;
 }
 #setting_header li {
     flex: 1;
@@ -253,12 +320,31 @@ ul {
 
 
 /* CALENDARVIEW */
+#calendar_header {
+    background-color: rgb(15, 76, 117);
+    text-align: center;
+    width: 100vw;
+    height: 9vh;
+    position: inherit;
+    border-bottom: 2px solid;
+    line-height: 9vh;
+    font-size: large;
+    font-weight: bolder;
+
+}
 .calendarToggle {
+    position: inherit;
     display: flex;
     justify-content: space-evenly;
     margin: 3vh;
 }
+#calendarBody {
+    border-bottom: 1px solid;
+    border-top: 1px solid;
+}
 .calendarColumn {
+    padding: 1vh;
+    border: 2px solid;
     display: flex;
     justify-content: space-between;
     text-align: center;
@@ -295,11 +381,13 @@ ul {
 }
 
 .bottom_menu {
-    background-color: cornflowerblue;
+    background-color: var(--header--color);
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
+    font-size: large;
+    font-weight: bolder;
 }
 
 .bottom_menu ul {
@@ -307,11 +395,17 @@ ul {
 }
 .bottom_menu li {
     display: inline-block;
+    background-color: white;
     width: 33%;
     text-align: center;
-    padding: 5px;
-    font-size: 2vh;
+    margin:10px;
+    transition: background-color,color 0.5s;
 }
+.bottom_menu li :hover {
+    background-color: black;
+    color: pink;
+}
+
 .bottom_menu .active {
     color: pink;
     background-color: black;

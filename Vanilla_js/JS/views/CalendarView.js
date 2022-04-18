@@ -5,12 +5,12 @@ const CalendarView = Object.create(View)
 
 
 CalendarView.template = {
-  BasicTop: `<div id = "calendarTop"><div class = 'calendarToggle' >
+  BasicTop: `<div id = 'calendar_header'>CALENDAR</div><div id = "calendarTop"><div class = 'calendarToggle' >
   <button class = "dateToggle"><</button><span id = "currentDate">DATE</span><button class = "dateToggle">></button>
   </div>
   <div id = "calendarBody"></div></div>`,
   BasicBottom: `<div id = 'calendarBottom'>
-  <div class ='detail' id='calendarDetailCover'>운동 정보가 없습니다</div>
+  <div class ='none' id='calendarDetailCover'>운동 정보가 없습니다</div>
   <div class='none' id = 'calendarDetail'></div></div>`
 }
 
@@ -29,11 +29,15 @@ CalendarView.renderTop = function (data = undefined) {
   const fromDay = new Date(this.currentYear, this.currentMonth, 0)
   const nowDay = new Date(this.currentYear, this.currentMonth + 1, 0)
   this.el.querySelector('#calendarBody').innerHTML = this.getCalendarHTML(fromDay, nowDay)
+  this.el.querySelector('#calendarBody').className = `restart`
   this.el.querySelector('#currentDate').innerHTML = this.currentYear + "." + (this.currentMonth + 1)
   this.bindClickEvent()
-  const ani__target = this.el
-  ani__target.style.animation = "slideInRight 0.4s ease-in-out"
+  const ani__target = this.el.querySelector('#calendarTop')
+  ani__target.style.animation = "slideInRight 0.3s ease-in-out"
+  const ani__target_Body = this.el.querySelector('#calendarBody')
+  ani__target_Body.style.animation = "slideInRight 0.4s ease-in-out"
   ani__target.classList.add('ani__run')
+
 }
 
 CalendarView.renderBottom = function (data = undefined) {
@@ -56,7 +60,7 @@ CalendarView.getCalendarHTML = function (fromDay, nowDay) {
   const beforeDay = fromDay.getDay()
   const afterDate = nowDay.getDate()
   const afterDay = nowDay.getDay()
-  let returnHTML = '<ul><li class = "calendarColumn">'
+  let returnHTML = `<ul><li class = "calendarColumn">`
   let count = 1
 
   for (let i = beforeDate - beforeDay; beforeDay < 6 ? i <= beforeDate : 0; i++ && count++) {
@@ -67,11 +71,14 @@ CalendarView.getCalendarHTML = function (fromDay, nowDay) {
     const histCheckpoint = this.histData ? (this.histData.indexOf(i) >= 0 ? "exist" : "nonexist") : "nonexist"
     const idCheck = this.selectedDay == i ? "selected" : ""
     returnHTML += '<div data-keyword = ' + (count - 1) + ' class = ' + histCheckpoint + ' id = ' + idCheck + '>' + i + '</div>'
+    if (count===35 && i>=afterDate) {
+      break
+    }
     count % 7 == 0 ? returnHTML += '</li><li class = "calendarColumn">' : ''
   }
   for (let i = 1; i < 7 - afterDay; i++ && count++) {
     returnHTML += '<div data-keyword = ' + (count - 1) + ' class = "nextMonth">' + i + '</div>'
-    count % 7 == 0 ? returnHTML += '</li><li class = "calendarColumn">' : ''
+    // count % 7 == 0 ? returnHTML += '</li><li class = "calendarColumn">' : ''
   }
   return returnHTML + '</ul></div>'
 }
@@ -135,8 +142,11 @@ CalendarView.onClickDate = function (e) {
 }
 CalendarView.onClickBtn = function (e) {
   event.stopImmediatePropagation()
+  const ani__target_Body = this.el.querySelector('#calendarBody')
+  ani__target_Body.style.animation = "none"
+  setTimeout(()=> {
   this.selectedDay = 0
-  this.el.querySelector('#calendarDetailCover').className = 'detail'
+  this.el.querySelector('#calendarDetailCover').className = 'none'
   this.el.querySelector('#calendarDetail').className = 'none'
   if (e.textContent === '<') {
     this.currentMonth - 1 === -1 ? (this.currentMonth = 11, this.currentYear -= 1) : this.currentMonth -= 1
@@ -146,6 +156,7 @@ CalendarView.onClickBtn = function (e) {
   const callYear = this.currentYear
   const callMonth = this.currentMonth + 1
   this.emit('@change', { callYear, callMonth })
+  },0)
 }
 
 CalendarView.onClick = function (e) {
@@ -167,8 +178,9 @@ CalendarView.onRemoveHistory = function (e) {
 }
 
 CalendarView.viewOut = function() {
-  const ani__target = this.el
-  ani__target.classList.contains('ani__run') ? '' : error
+  this.el.querySelectorAll('#calendarBottom div').forEach(div => div.className = 'none')
+  const ani__target = this.el.querySelector('#calendarTop')
+  // ani__target.classList.contains('ani__run') ? '' : console.error(tag);
   ani__target.style.animation = "slideOutRight 0.2s forwards"
 }
 

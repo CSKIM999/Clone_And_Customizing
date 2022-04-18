@@ -21,6 +21,11 @@ SettingView.render = function (data, keyword = NaN, adj = NaN) {
   this.el.innerHTML = this.template.Setting + this.getSettingHtml(this.data)
   this.bindClickEvent()
   this.show()
+
+  const ani__target = this.el
+  ani__target.style.animation = 'slideUp 0.4s ease'
+  ani__target.classList.add('ani__run')
+
   return this
 }
 
@@ -49,8 +54,8 @@ SettingView.spreadItem = function (data = []) {
 }
 
 SettingView.bindClickEvent = function () {
-  this.el.querySelector('#setting_cancel').addEventListener('click', e => this.onCancel(e))
-  this.el.querySelector('#setting_save').addEventListener('click', e => this.onSave(e))
+  this.el.querySelector('#setting_cancel').addEventListener('click', e => this.viewOut(e))
+  this.el.querySelector('#setting_save').addEventListener('click', e => this.viewOut(e,true))
   this.el.querySelector('#addWorkout').addEventListener('click', e => this.onAddWorkout())
   this.inputEl = this.el.querySelector('[type=text]')
   this.inputEl.addEventListener('keyup', e => this.data.name = this.inputEl.value)
@@ -72,6 +77,9 @@ SettingView.onClick = function (e) {
 
 SettingView.onSave = function (e) {
   event.stopImmediatePropagation()
+  if (e.animationName === 'slideUp') {
+    return
+  }
   if (this.el.querySelector('input').value.trim() === '') {
     alert('루틴 이름을 입력해주세요!')
   }
@@ -104,8 +112,36 @@ SettingView.onDelWorkout = function (e) {
 }
 
 
-SettingView.onCancel = function () {
+SettingView.onCancel = function (e) {
+  if (e.animationName === 'slideUp') {
+    return
+  }
   this.emit('@cancel', {})
 }
+
+SettingView.viewOut = function(data,SaveOrCancel=false) {
+  const ani__target = this.el
+  ani__target.style.animation = "slideDown 0.3s forwards"
+  
+  // ani__target.classList.replace('ani__run','ani__end')
+  // if (SaveOrCancel) {
+  //   ani__target.addEventListener('animationend', e=> {
+  //     if (ani__target.classList.contains('ani__run')) {
+  //       return
+  //     } else{
+  //       this.onSave(e)
+  //     }
+  //   })
+  // } else{
+  //   ani__target.addEventListener('animationend', e=> this.onCancel(e))
+  // }
+
+  if (SaveOrCancel) {
+    ani__target.addEventListener('animationend', e=> this.onSave(e))
+  } else{
+    ani__target.addEventListener('animationend', e=> this.onCancel(e))
+  }
+}
+
 
 export default SettingView
