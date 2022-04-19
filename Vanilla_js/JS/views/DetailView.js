@@ -77,8 +77,7 @@ DetailView.getDetailHtml = function () {
 DetailView.bindClickEvent = function () {
   this.el.querySelector('#detailName').addEventListener('change', e => this.data.name = e.currentTarget.value)
   this.el.querySelector('#setting_cancel').addEventListener('click', e => this.viewOut())
-  isNaN(this.checkAdjust) ? this.el.querySelector('#setting_save').addEventListener('click', e => this.onSaveDetail()) :
-    this.el.querySelector('#setting_save').addEventListener('click', e => this.viewOut(true))
+  this.el.querySelector('#setting_save').addEventListener('click', e => this.viewOut(true))
   this.el.querySelector('#setCount').addEventListener('change', e => this.changeValue(e))
   Array.from(this.el.querySelectorAll('.toggleTop span')).forEach(span => {
     span.addEventListener('click', e => this.changeValue(span))
@@ -164,7 +163,7 @@ DetailView.changeValue = function (e) {
 
 
 DetailView.onCancel = function (e) {
-  if (e.animationName === 'slideUp') {
+  if (e.animationName !== 'slideDown') {
     return
   }
   this.emit('@cancel', {})
@@ -181,7 +180,7 @@ DetailView.datahandling = function () {
 
 DetailView.onSaveDetail = function (e) {
   event.stopPropagation()
-  if (e.animationName === 'slideUp') {
+  if (e.animationName !== 'slideDown') {
     return
   }
   if (this.checkKeyword === undefined) { debugger }
@@ -191,8 +190,11 @@ DetailView.onSaveDetail = function (e) {
   this.data.name === '' ? alert('운동 이름을 입력해주세요') : this.emit('@push', { data, keyword })
 }
 
-DetailView.onAdjDetail = function () {
+DetailView.onAdjDetail = function (e) {
   event.stopPropagation()
+  if (e.animationName !== 'slideDown') {
+    return
+  }
   if (this.checkKeyword === NaN || this.checkAdjust === NaN) { debugger }
   DetailView.datahandling(this.data)
   const keyword = this.checkKeyword
@@ -202,11 +204,14 @@ DetailView.onAdjDetail = function () {
 }
 
 DetailView.viewOut = function(SaveOrCancel) {
+  event.stopImmediatePropagation()
   const ani__target = this.el
   ani__target.style.animation = "slideDown 0.3s forwards"
   // ani__target.classList.contains('ani__run') ? '' : console.error(tag);
   if (SaveOrCancel) {
-    ani__target.addEventListener('animationend', e=> this.onSave(e))
+    ani__target.addEventListener('animationend', e=> {
+      isNaN(this.checkAdjust) ? this.onSaveDetail(e) : this.onAdjDetail(e)
+    })
   } else{
     ani__target.addEventListener('animationend', e=> this.onCancel(e))
   }

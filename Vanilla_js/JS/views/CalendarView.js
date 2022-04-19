@@ -6,7 +6,7 @@ const CalendarView = Object.create(View)
 
 CalendarView.template = {
   BasicTop: `<div id = 'calendar_header'>CALENDAR</div><div id = "calendarTop"><div class = 'calendarToggle' >
-  <button class = "dateToggle"><</button><span id = "currentDate">DATE</span><button class = "dateToggle">></button>
+  <span class = "dateToggle"><</span><span id = "currentDate">DATE</span><span class = "dateToggle">></span>
   </div>
   <div id = "calendarBody"></div></div>`,
   BasicBottom: `<div id = 'calendarBottom'>
@@ -103,8 +103,8 @@ CalendarView.spreadItem = function (data = []) {
 }
 
 CalendarView.bindClickEvent = function () {
-  Array.from(this.el.querySelectorAll('.dateToggle')).forEach(button => {
-    button.addEventListener('click', e => this.onClickBtn(e.target))
+  Array.from(this.el.querySelectorAll('.dateToggle')).forEach(span => {
+    span.addEventListener('click', e => this.onClickBtn(e.target))
   })
   Array.from(this.el.querySelectorAll('.calendarColumn div')).forEach(div => {
     div.addEventListener('click', e => this.onClickDate(e.target))

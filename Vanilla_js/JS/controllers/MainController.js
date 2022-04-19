@@ -69,7 +69,8 @@ export default {
           return
         }
         ani__target.classList.replace('ani__run','ani__end')
-        this.renderMenu()})
+        })
+      this.renderMenu()
       }
 
     else{ //Vanilla
@@ -98,12 +99,6 @@ export default {
       this.menuHist === 'ROUTINE' ? RoutineView.viewOut(true) : CalendarView.viewOut()
     } else if (this.selectedMenu === 'ROUTINE') {
       this.menuHist === 'MAINPAGE' ? ContentsView.viewOut(true) : CalendarView.viewOut()
-      // try{
-      //   ContentsView.viewOut()
-      // } catch {
-      //   CalendarView.viewOut()
-      // }
-
     } else {
       this.menuHist === 'ROUTINE' ? RoutineView.viewOut(true) : ContentsView.viewOut()
       // try {
@@ -119,7 +114,6 @@ export default {
   fetchContent() {
     
     RoutineModel.list().then(data => {
-      // TimerView.el.style.animation = "rotate 1s ease"
       WorkoutView.hide()
       RoutineView.hide()
       CalendarView.hide()
@@ -128,9 +122,6 @@ export default {
       TimerView.show()
       ContentsView.show()
       ContentsView.render(data)
-      // animateCSS('.contents', 'slideInRight')
-      // animateCSS('.timer', 'slideInRight')
-      // animateCSS('.bottom_menu', 'slideInRight')
     })
   },
 

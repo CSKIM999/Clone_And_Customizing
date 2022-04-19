@@ -30,8 +30,8 @@ SettingView.render = function (data, keyword = NaN, adj = NaN) {
 }
 
 SettingView.getSettingHtml = function () {
-  return `<div>
-  <span>Routine Name</span><br><input value="${this.data.name.length == 0 ? '' : (this.data.name === 'temp' ? '' : this.data.name)}" type=text placeholder="루틴 이름을 적어주세요">
+  return `<div id = 'settingBox' >
+  <span id = 'routineNameSpan'>Routine Name</span><br><input value="${this.data.name.length == 0 ? '' : (this.data.name === 'temp' ? '' : this.data.name)}" type=text placeholder="루틴 이름을 적어주세요">
   <div><span id ="addWorkout">+ 운동 추가</span></div>
   ${this.data.detail.length === 0 ? '' : `
   </div>
@@ -77,7 +77,7 @@ SettingView.onClick = function (e) {
 
 SettingView.onSave = function (e) {
   event.stopImmediatePropagation()
-  if (e.animationName === 'slideUp') {
+  if (e.animationName !== 'slideDown') {
     return
   }
   if (this.el.querySelector('input').value.trim() === '') {
@@ -88,7 +88,17 @@ SettingView.onSave = function (e) {
 
 SettingView.activeSettingDetail = function (e) {
   Array.from(this.el.querySelectorAll('#routine_contents ul')).forEach(ul => {
-    ul.parentElement.parentElement.dataset['keyword'] === e ? (ul.className == 'none' ? ul.className = 'detail' : ul.className = 'none') : false
+    // ul.parentElement.parentElement.dataset['keyword'] === e ? (ul.className == 'none' ? ul.className = 'detail' : ul.className = 'none') : false
+    if (ul.parentElement.parentElement.dataset['keyword'] === e) {
+      if (ul.classList.contains('none')) {
+        ul.classList.replace('none','detail') 
+        ul.style.animation='dropDown 0.1s ease-In'
+      } else {
+        ul.style.animation='dropUp 0.2s ease-In Forwards'
+        setTimeout(() => ul.classList.replace('detail','none'),200)
+      }
+      ul.style.transition = '0.5s ease'
+    }
   })
 }
 
@@ -113,7 +123,7 @@ SettingView.onDelWorkout = function (e) {
 
 
 SettingView.onCancel = function (e) {
-  if (e.animationName === 'slideUp') {
+  if (e.animationName !== 'slideDown') {
     return
   }
   this.emit('@cancel', {})
