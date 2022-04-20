@@ -37,7 +37,7 @@ ContentsView.getContentHtml = function (data) {
     <li class="routine_adjust">ADJ</li>
     <li class="routine_start">START</li></ul></ul>`
     return html
-}, "<span id = 'contents_guide'>CSKIM with MVC</span><ul>") + '</ul>'
+}, "<span id = 'contents_guide'>VANILLA_JS WITH MVC</span><ul>") + '</ul>'
 }
 
 ContentsView.spreadItem = function (data = []) {

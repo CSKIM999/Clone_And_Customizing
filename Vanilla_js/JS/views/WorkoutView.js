@@ -48,10 +48,15 @@ WorkoutView.getWorkoutHtml = function (data = {}) {
     <span id = 'contentsName'>${item.name}</span>
     <span>
     <span class = 'detail' id = 'duringWorkout'>
-    <span id = 'workoutWeight'>${item.routine.item[0][0]}kg</span>
-    <span id = 'workoutReps'>x ${item.routine.item[0][1]} 개</span>
-    <span id = 'workoutSet'><span>1</span> SET</span>
-    </span>
+    ${item.routine.item[0].length===2 ? 
+      `<span id = "workoutWeight">${item.routine.item[0][0]}kg</span>
+      <span id = "workoutReps">x ${item.routine.item[0][1]} 개</span>
+      <span id = "workoutSet"><span>1</span> SET</span>` :
+      `<span id = "workoutWeight">${item.routine.item[0][1]}</span>
+      <span id = "workoutReps"> ${item.routine.item[0][2]}</span>
+      <span id = "workoutSet"><span>1</span> SET</span>`
+    }
+    </span> 
     <span class = 'none' id = 'workoutDone' >완료</span>
     </span>
     </div>
@@ -149,9 +154,16 @@ WorkoutView.onClick = function (e) {
     e.querySelector('#workoutSet span').textContent = count < 0 ? 1 : count + 2
   }
 
-  if (count >= 0) {
-    e.querySelector('#workoutWeight').textContent = item[count][0] + 'kg x'
-    e.querySelector('#workoutReps').textContent = item[count][1] + ' 개'
+  if (0<=count<item.length-2) {
+    if (count !== item.length-1) {
+      if (item[0].length === 3) {
+        e.querySelector('#workoutWeight').textContent = item[count+1][1]
+        e.querySelector('#workoutReps').textContent = item[count+1][2]
+      } else {
+        e.querySelector('#workoutWeight').textContent = item[count+1][0] + 'kg x'
+        e.querySelector('#workoutReps').textContent = item[count+1][1] + ' 개'
+      }
+    }
   }
   Array.from(e.querySelectorAll('#workoutCountDisplay span')).forEach(span => {
     span.className = span.dataset.keyword <= count ? 'done' : ''

@@ -27,12 +27,12 @@ RoutineView.render = function (data = []) {
 }
 
 RoutineView.noData = function () {
-  return "<div class ='routines' id = 'routines_header'>"
-    + "<ul><li><span id = 'add_routine'>루틴추가</span></li>"
-    + "<li>My-Routines</li></ul></div>"
-    + "<ul id = 'routine_contents_margin'>"
+  return "<div class ='routines' id = 'routines_header'>My-Routines</div>"
+    // + "<ul></li>"
+    // + "<li>My-Routines</li></ul></div>"
+    + "<ul id = 'routine_contents_margin'><li><span id = 'add_routine'>루틴추가</span>"
     + "<div class = 'noRoutine' >아직 루틴이 없습니다 루틴을 추가해보세요!</div>"
-    + "<span class = 'noRoutine' id = 'add_routine'>루틴 추가 +</span>"
+    + "<span class = 'noRoutine' id = 'add_routine'>+ 루틴 추가 +</span>"
     + '</ul.>'
 }
 
@@ -47,10 +47,10 @@ RoutineView.getRoutineHtml = function (data) {
     <li class="routine_adjust">ADJ</li>
     <li class="routine_start">START</li></ul></li>`
     return html
-  }, "<div class ='routines' id = 'routines_header'>"
-  + "<ul><li><span id = 'add_routine'>루틴추가</span></li>"
-  + "<li>My-Routines</li></ul></div>"
-  + "<ul id = 'routine_contents_margin'>") + '</ul.>'
+  }, "<div class ='routines' id = 'routines_header'>My-Routines</div>"
+  // + "<ul>"
+  // + "<li>My-Routines</li></ul></div>"
+  + "<ul id = 'routine_contents_margin'><li><span id = 'add_routine'>+ 루틴추가 +</span></li>") + '</ul.>'
 }
 RoutineView.spreadItem = function (data = []) {
   return data.detail.reduce((html, item) => {

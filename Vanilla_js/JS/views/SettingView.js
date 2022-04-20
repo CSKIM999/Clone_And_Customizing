@@ -38,7 +38,7 @@ SettingView.getSettingHtml = function () {
   ${this.data.detail.reduce((html, item, index) => {
     return html += `<li data-keyword='${index}' id = "routine_contents">
     <div id = "clickable">
-    <div id="routine_text">${item.name} ${item.routine.item.length} SET </div>
+    <div id="routine_text">  ${item.name} <div id = 'routineSetDisplay'>${item.routine.item.length} SET </div></div>
     ${this.spreadItem(item.routine.item)}
     </li></div>`
   }, '<ul>') + '</ul>'}`
@@ -48,6 +48,10 @@ SettingView.getSettingHtml = function () {
 
 SettingView.spreadItem = function (data = []) {
   return data.reduce((html, item, index) => {
+    if (item.length === 3) {
+      html += `<li>${index + 1} SET ${item[1]} &nbsp;&nbsp;${item[2]}</li>`
+    return html
+    }
     html += `<li>${index + 1} SET ${item[0]}kg &nbsp;&nbsp;${item[1]}개</li>`
     return html
   }, '<ul class = "none">') + '<div class = settingBtn><span id = "settingDel">DEL</span><span id ="settingAdj">ADJ</span></div></ul>'

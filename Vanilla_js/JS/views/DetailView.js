@@ -27,7 +27,7 @@ DetailView.setDataType = function (data) {
 }
 
 DetailView.render = function (data = [], keyword = NaN, adj = NaN) {
-  event.stopPropagation()
+  event.stopImmediatePropagation()
   this.checkKeyword = keyword
   this.checkAdjust = adj
   this.data = data
@@ -42,8 +42,6 @@ DetailView.render = function (data = [], keyword = NaN, adj = NaN) {
   this.bindClickEvent()
   const ani__target = this.el
   ani__target.style.animation = 'slideUp 0.4s ease'
-  ani__target.classList.add('ani__run')
-
   return this
 }
 
@@ -52,21 +50,21 @@ DetailView.getDetailHtml = function () {
     html += `
     <div data-keyword=${index} class =${this.selectedToggleBottom === "SAME ALL" ? (index === 0 ? "spreadDetail-on" : "spreadDetail-off") : "spreadDetail-on"}>
     <span class = ${this.selectedToggleBottom === "SAME ALL" ? "none" : "detail"}>SET ${index + 1}</span>
-    <input id = "weight" class= ${this.selectedToggleTop === "W,C" ? "detail" : "none"} value=${item[0]} type="number">
-    <input id = "count" value=${item[1]} type="number" min="1" max="100">
+    <input id = "weight" class= ${this.selectedToggleTop === "W,C" ? "detail" : "none"} value=${item[0]} type="number"> ${this.selectedToggleTop === "W,C" ? 'kg' : ' '}
+    <input id = "count" value=${item[1]} type="number" min="1" max="100"> ${this.selectedToggleTop === "W,C" ? '개' : ' '}
     <span class=${this.selectedToggleTop === "Only C" ? "detail" : "none"}> 개</span>
-    <div class =${this.selectedToggleTop === "W,C" ? "detail" : "none"}>
-    <button>+5</button><button>-5</button><br><button>+1</button><button>-1</button>
-    </div>
-    <span class=${this.selectedToggleTop === "Only T" ? "detail" : "none"}> test </span>
+    ${(this.selectedToggleTop === "W,C") ?
+     "<div class =${this.selectedToggleTop === 'W,C' ? 'detail' : 'none'}><span class='a'>+5</span><span class='b'>-5</span><span class='c'>+1</span><span class='d'>-1</span></div>"
+      : ''}
+    <span class=${this.selectedToggleTop === "Only T" ? "detail" : "none"}> Min </span>
     </div>`
     return html
   }, `<div id = "detail_body">
-  <div><span>WorkOut Name</span><br>
-  <input id = "detailName" value ="${this.data.name === '' ? '' : this.data.name}"type=text placeholder="운동 이름을 적어주세요"></div>
-  <div>세트수와 세트별 개수 및 무게를 알려주세요</div>
+  <div id = 'detailBox'><span>WorkOut Name</span><br>
+  <input id = "detailName" value ="${this.data.name === '' ? '' : this.data.name}"type=text placeholder="운동 이름을 적어주세요">
+  <div>세트수와 세트별 개수 <br>그리고 무게를 알려주세요</div></div>
+  <div id = 'detailSetBox'><input id='setCount' value = ${this.data.routine.item.length} type="number" min="1" max="100"> SET</div>
   <ul id = "detailToggle">
-  <li><input id='setCount' value = ${this.data.routine.item.length} type="number" min="1" max="100"> SET</li>
   <li class = 'toggleTop'><span class>W,C</span><span class>Only C</span><span class>Only T</span></li>
   <li class = 'toggleBottom'><span class>SAME ALL</span><span>EACH</span></li>
   </ul>
@@ -88,8 +86,8 @@ DetailView.bindClickEvent = function () {
   Array.from(this.el.querySelectorAll('#detailData input')).forEach(input => {
     input.addEventListener('change', e => this.onChangeInput(input))
   })
-  Array.from(this.el.querySelectorAll('#detailData button')).forEach(button => {
-    button.addEventListener('click', e => this.onClickButton(e.currentTarget))
+  Array.from(this.el.querySelectorAll('.spreadDetail-on div span')).forEach(span => {
+    span.addEventListener('click', e => this.onClickButton(e.currentTarget))
   })
 }
 
@@ -152,6 +150,7 @@ DetailView.onChangeToggleBottom = function (e) {
 DetailView.changeValue = function (e) {
   event.stopPropagation()
   if (e.parentElement === undefined) {
+    debugger
     this.onChangeCount(e.currentTarget.value, this.data)
   } else if (e.parentElement.className === "toggleBottom") {
     this.onChangeToggleBottom(e.innerHTML, this.data)
@@ -163,6 +162,7 @@ DetailView.changeValue = function (e) {
 
 
 DetailView.onCancel = function (e) {
+  event.stopImmediatePropagation()
   if (e.animationName !== 'slideDown') {
     return
   }
@@ -173,13 +173,26 @@ DetailView.onCancel = function (e) {
 
 DetailView.datahandling = function () {
   event.stopPropagation()
+  if (this.data.routine.selectedToggleTop === 'Only C') {
+    this.data.routine.item.map(x => {
+      x.push('Reps')
+      x[0] = 0
+    })
+  } else if (this.data.routine.selectedToggleTop === 'Only T') {
+    this.data.routine.item.map(x => {
+      x.push('Minutes')
+      x[0] = 0
+    })
+  }
+
   if (this.data.routine.selectedToggleBottom === "SAME ALL") {
     this.data.routine.item = this.data.routine.item.map(x => this.data.routine.item[0])
   }
 }
 
 DetailView.onSaveDetail = function (e) {
-  event.stopPropagation()
+  console.log('onsave')
+  event.stopImmediatePropagation()
   if (e.animationName !== 'slideDown') {
     return
   }
@@ -187,11 +200,12 @@ DetailView.onSaveDetail = function (e) {
   DetailView.datahandling(this.data)
   const keyword = this.checkKeyword
   const data = this.data
-  this.data.name === '' ? alert('운동 이름을 입력해주세요') : this.emit('@push', { data, keyword })
+  this.emit('@push', { data, keyword })
 }
 
 DetailView.onAdjDetail = function (e) {
-  event.stopPropagation()
+  console.log('onadj')
+  event.stopImmediatePropagation()
   if (e.animationName !== 'slideDown') {
     return
   }
@@ -200,11 +214,16 @@ DetailView.onAdjDetail = function (e) {
   const keyword = this.checkKeyword
   const adj = this.checkAdjust
   const data = this.data
-  this.data.name === '' ? alert('운동 이름을 입력해주세요') : this.emit('@adjust', { data, keyword, adj })
+  this.emit('@adjust', { data, keyword, adj })
 }
 
 DetailView.viewOut = function(SaveOrCancel) {
+  console.log(SaveOrCancel)
   event.stopImmediatePropagation()
+  if (SaveOrCancel=== true && this.data.name === '') {
+    alert('운동 이름을 입력해주세요')
+    return
+  }
   const ani__target = this.el
   ani__target.style.animation = "slideDown 0.3s forwards"
   // ani__target.classList.contains('ani__run') ? '' : console.error(tag);

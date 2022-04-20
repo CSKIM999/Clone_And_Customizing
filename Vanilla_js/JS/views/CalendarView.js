@@ -90,7 +90,7 @@ CalendarView.getCalendarBottomHTML = function (data) {
     <div id = "routine_text">${item.name}
     <div id = "routine_count">${Object.keys(item.detail).length} Workouts</div></div>
     <div class ='none' id = 'routine_detail'>${this.spreadItem(item)}</div></div>
-    <button id = "routine_btns" class="routine_remove">RM</button>`
+    <span id = "routine_btns" class="routine_remove">RM</span>`
     return html
   }, "<ul>") + '</ul>'
 }
@@ -109,8 +109,8 @@ CalendarView.bindClickEvent = function () {
   Array.from(this.el.querySelectorAll('.calendarColumn div')).forEach(div => {
     div.addEventListener('click', e => this.onClickDate(e.target))
   })
-  Array.from(this.el.querySelectorAll('#calendarDetail .routine_remove')).forEach(button => {
-    button.addEventListener('click', e => this.onRemoveHistory(button.parentElement))
+  Array.from(this.el.querySelectorAll('#calendarDetail .routine_remove')).forEach(span => {
+    span.addEventListener('click', e => this.onRemoveHistory(span.parentElement))
   })
   Array.from(this.el.querySelectorAll('#clickable')).forEach(div => {
     div.addEventListener('click', e => this.onClick(div.parentElement))
@@ -131,15 +131,18 @@ CalendarView.onClickDate = function (e) {
     this.selectedDay = +e.textContent
     e.textContent = '<'
     this.onClickBtn(e)
+    return
   } else if (e.dataset.keyword > 30 && e.textContent < 7) {
     this.selectedDay = +e.textContent
     e.textContent = '>'
     this.onClickBtn(e)
+    return
   } else {
     this.selectedDay = +e.innerHTML
   }
   this.renderTop(this.histData)
 }
+
 CalendarView.onClickBtn = function (e) {
   event.stopImmediatePropagation()
   const ani__target_Body = this.el.querySelector('#calendarBody')
@@ -160,9 +163,17 @@ CalendarView.onClickBtn = function (e) {
 }
 
 CalendarView.onClick = function (e) {
-  Array.from(this.el.querySelectorAll('#calendarDetail #routine_detail')).forEach(div => {
+  Array.from(this.el.querySelectorAll('#calendarDetail #routine_detail ul')).forEach(ul => {
     event.stopPropagation()
-    div.parentElement.parentElement.dataset['keyword'] === e.dataset.keyword ? (div.className == 'none' ? div.className = 'detail' : div.className = 'none') : ''
+    if (ul.parentElement.parentElement.parentElement.dataset['keyword'] === e.dataset.keyword) {
+      if (ul.parentElement.classList.contains('none')) {
+        ul.parentElement.classList.replace('none','detail')
+        ul.style.animation='dropDown 0.1s ease-In'
+      } else{
+        ul.style.animation='dropUp 0.2s ease-In Forwards'
+        setTimeout(() => ul.parentElement.classList.replace('detail','none'),200)
+      }
+    }
   })
 }
 CalendarView.onRemoveHistory = function (e) {
