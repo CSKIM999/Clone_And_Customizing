@@ -150,7 +150,6 @@ DetailView.onChangeToggleBottom = function (e) {
 DetailView.changeValue = function (e) {
   event.stopPropagation()
   if (e.parentElement === undefined) {
-    debugger
     this.onChangeCount(e.currentTarget.value, this.data)
   } else if (e.parentElement.className === "toggleBottom") {
     this.onChangeToggleBottom(e.innerHTML, this.data)

@@ -64,7 +64,7 @@ WorkoutView.getWorkoutHtml = function (data = {}) {
     <div class = 'workoutCount'>
     <span id = 'workoutCountDisplay'>
     ${item.routine.item.reduce((innerhtml, inneritem, innerindex) => {
-      return innerhtml += `<span data-keyword="${innerindex}" class>${innerindex + 1}</span>`
+      return innerhtml += `<span data-keyword="${innerindex}" class></span>`
     }, '')}
     </span>
     <button id = 'adjustBtn'>-1</button>
@@ -118,14 +118,6 @@ WorkoutView.onEnd = function (e) {
   if (e.animationName === 'slideUp') {
     return
   }
-  // if (confirm('운동을 종료하시겠습니까?') == false) {
-  //   const ani__target = this.el.querySelector('.workout .contents')
-  //   ani__target.style.animation = "slideUp 0.5s forwards"
-  //   return
-  // } else {
-  //   alert('수고하셨습니다!\nCalendar에서 운동내역을 확인할 수 있습니다')
-  // }
-  
   this.startToggle = true
   this.handleData.detail.forEach(item => {
     const detail = item.routine.item
@@ -167,7 +159,9 @@ WorkoutView.onClick = function (e) {
   }
   Array.from(e.querySelectorAll('#workoutCountDisplay span')).forEach(span => {
     span.className = span.dataset.keyword <= count ? 'done' : ''
-
+    if (count>=item.length-2) {
+      
+    }
   })
 
 

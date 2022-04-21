@@ -140,6 +140,11 @@
         margin-top: 200%;
     }
 }
+@keyframes blink {
+    50% {background: var(--pointer--color);}
+}
+
+
 
 :root {
     --header--color : rgb(15, 76, 117);
@@ -213,7 +218,25 @@ ul {
     font-size: 3vh;
     padding-left: 3vh;
 }
+.workoutCount {
+    display: flex;
+}
 
+#workoutCountDisplay{
+    width: 50%;
+    display: flex;
+    height: 1vh;
+    border: 3px solid;
+    margin-top: 1vh;
+}
+#workoutCountDisplay span{
+    width: 100%;
+    border-left: 2px solid;
+    transition: background .5s ease;
+}
+#workoutCountDisplay .running{
+    animation: blink 1s ease infinite;  
+}
 
 .routines {
     width: 100%;
