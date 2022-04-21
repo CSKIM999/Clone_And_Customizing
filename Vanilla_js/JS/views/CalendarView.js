@@ -86,7 +86,7 @@ CalendarView.getCalendarHTML = function (fromDay, nowDay) {
 CalendarView.getCalendarBottomHTML = function (data) {
   return data.reduce((html, item, index) => {
     html += `<li data-keyword="${index}" id = "routine_contents">
-    <div id = "clickable">
+    <div class = "clickable">
     <div id = "routine_text">${item.name}
     <div id = "routine_count">${Object.keys(item.detail).length} Workouts</div></div>
     <div class ='none' id = 'routine_detail'>${this.spreadItem(item)}</div></div>
@@ -112,7 +112,7 @@ CalendarView.bindClickEvent = function () {
   Array.from(this.el.querySelectorAll('#calendarDetail .routine_remove')).forEach(span => {
     span.addEventListener('click', e => this.onRemoveHistory(span.parentElement))
   })
-  Array.from(this.el.querySelectorAll('#clickable')).forEach(div => {
+  Array.from(this.el.querySelectorAll('.clickable')).forEach(div => {
     div.addEventListener('click', e => this.onClick(div.parentElement))
   })
 }

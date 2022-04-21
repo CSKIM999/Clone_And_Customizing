@@ -5,7 +5,7 @@ const SettingView = Object.create(View)
 
 
 SettingView.template = {
-  Setting: `<ul id = "setting_header"><li id ='setting_cancel' style="text-align: left;"><<</li><li style="text-align: center;">Setting</li><li id = "setting_save" style="text-align: right;">Save</li></ul>`
+  Setting: `<ul id = "setting_header"><li id ='setting_cancel' style="text-align: left;"><<</li><li id='setting_center' style="text-align: center;">Setting</li><li id = "setting_save" style="text-align: right;">Save</li></ul>`
 }
 
 SettingView.setup = function (el) {

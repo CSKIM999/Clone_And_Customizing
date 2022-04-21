@@ -19,7 +19,7 @@ MenuView.bindClick = function () {
 
 MenuView.setActiveMenu = function (menuName) {
   Array.from(this.el.querySelectorAll('li')).forEach(li => {
-    li.innerHTML === menuName ? li.className = "active" : li.className = "none"
+    li.innerHTML === menuName ? li.className = "active" : li.className = ""
   })
 }
 

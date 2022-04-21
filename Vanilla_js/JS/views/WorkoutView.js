@@ -8,10 +8,10 @@ const WorkoutView = Object.create(View)
 
 WorkoutView.template = {
   Basic: `<div class = "contents">
-  <div class = 'detail'><span id = "startButton">start</span><span id = 'cancelButton'>Cancel</span></div>
+  <div id = 'workoutBox'>
+  <div class = 'detail'><span id = "startButton">START</span><span id = 'cancelButton'>Cancel</span></div>
   <div class='none' id = 'stopBtns' >
-  <span id = "tempStop">STOP</span>
-  <span id = "endWorkout">END</span></div>
+  <span id = "tempStop">STOP</span><span id = "endWorkout">END</span></div></div>
   <div id = "workoutContents"></div></div>
   `
 }
@@ -40,7 +40,7 @@ WorkoutView.render = function (data = {}) {
 }
 WorkoutView.getWorkoutHtml = function (data = {}) {
   return `
-  <ul><li><span>${data.name}</span></li>
+  <ul><li><span id = 'workoutRoutineName'>${data.name}</span></li>
   ${data.detail.reduce((html, item, index) => {
     return html += `<li data-keyword = '${index}' id = 'routine_contents'>
 
@@ -64,10 +64,10 @@ WorkoutView.getWorkoutHtml = function (data = {}) {
     <div class = 'workoutCount'>
     <span id = 'workoutCountDisplay'>
     ${item.routine.item.reduce((innerhtml, inneritem, innerindex) => {
-      return innerhtml += `<span data-keyword="${innerindex}" class></span>`
+      return innerhtml += `<span data-keyword="${innerindex}" class=${innerindex===0? "running":''}></span>`
     }, '')}
     </span>
-    <button id = 'adjustBtn'>-1</button>
+    <span id = 'adjustBtn'> <<< </span>
     
     </div></li>
     `
@@ -87,8 +87,8 @@ WorkoutView.bindClickEvent = function () {
   Array.from(this.el.querySelectorAll('#routine_contents')).forEach(li => {
     li.addEventListener('click', e => this.onClick(e.currentTarget))
   })
-  Array.from(this.el.querySelectorAll('#adjustBtn')).forEach(button => {
-    button.addEventListener('click', e => this.onAdjust(e.currentTarget.parentElement.parentElement))
+  Array.from(this.el.querySelectorAll('#adjustBtn')).forEach(span => {
+    span.addEventListener('click', e => this.onAdjust(e.currentTarget.parentElement.parentElement))
   })
 }
 
@@ -96,6 +96,8 @@ WorkoutView.bindClickEvent = function () {
 WorkoutView.onStart = function () {
   this.el.querySelector('#startButton').parentElement.className = 'none'
   this.el.querySelector('#stopBtns').className = 'detail'
+  const ani__target = this.el.querySelector('#workoutContents')
+  ani__target.style.animation = "brr ease .7s"
   this.startToggle = false
   this.emit('@start', {})
 }
@@ -158,10 +160,14 @@ WorkoutView.onClick = function (e) {
     }
   }
   Array.from(e.querySelectorAll('#workoutCountDisplay span')).forEach(span => {
-    span.className = span.dataset.keyword <= count ? 'done' : ''
-    if (count>=item.length-2) {
-      
+    if (+span.dataset.keyword === count) {
+      span.className = 'done'
+    } else if (+span.dataset.keyword === count+1) {
+      span.className ='running'
+    } else if (+span.dataset.keyword > count+1) {
+      span.className =''
     }
+    // span.className = span.dataset.keyword <= count ? 'done' : ''
   })
 
 

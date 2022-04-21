@@ -91,7 +91,6 @@
         margin-right: 100%;
     }
 }
-
 @keyframes dropDown {
     0% {
         transform: scaleY(0.1) translateY(-10%);
@@ -143,8 +142,20 @@
 @keyframes blink {
     50% {background: var(--pointer--color);}
 }
-
-
+@keyframes brr {
+    0%{
+        margin-top: 0%;
+    }
+    30%{
+        margin-top: -1%;
+    }
+    70% {
+        margin-top: 1%;
+    }
+    100%{
+        margin-top: 0%;
+    }
+}
 
 :root {
     --header--color : rgb(15, 76, 117);
@@ -156,7 +167,6 @@
 body {
     display: flex;
     width: 100vw;
-    height: 100vh;
     margin: 0;
     padding: 0;
     color: var(--font--color);
@@ -169,6 +179,7 @@ body {
     max-width: 1024px;
     min-width: 280px;
     width: 100%;
+    overflow: hidden;
 }
 
 ul {
@@ -184,7 +195,6 @@ ul {
     top: 0;
     background-color: var(--header--color);
     font-size: 3vh;
-    border-bottom: 2px solid;
     height: 5vh;
     padding-top: 2vh;
     text-align: center;
@@ -209,14 +219,22 @@ ul {
 
 
 .contents {
-    position: fixed;
+    display: flex;
     width: 100%;
     padding-top: 11vh;
+    flex-direction: column;
 }
 #contents_guide {
     /* padding-top: 9vh; */
     font-size: 3vh;
     padding-left: 3vh;
+}
+#workoutContents {
+    max-width: 1024px;
+}
+#workoutRoutineName {
+    font-size: 3vh;
+    margin-left: 3vh;
 }
 .workoutCount {
     display: flex;
@@ -235,8 +253,32 @@ ul {
     transition: background .5s ease;
 }
 #workoutCountDisplay .running{
-    animation: blink 1s ease infinite;  
+    animation: blink 2s ease infinite;  
 }
+#workoutBox {
+    display: flex;
+    justify-content: center;
+    font-size: 2vh;
+    margin-top: 2vh;
+}
+#workoutBox span{
+    margin: 3vh;
+    padding: 1vh;
+}
+#startButton {
+    color: var(--pointer--color);
+}
+
+#cancelButton {
+    color: red
+}
+#adjustBtn {
+    margin-left: 1vh;
+    margin-top: .2vh;
+    font-size: 1.8vh;
+}
+
+
 
 .routines {
     width: 100%;
@@ -272,7 +314,6 @@ ul {
     position: absolute;
     height: 9vh;
     background-color: var(--header--color);
-    border-bottom: 2px solid;
     font-size: 3vh;
     font-weight: bolder;
     display: flex;
@@ -288,7 +329,14 @@ ul {
     flex: 1;
     text-align: center;
     border: 1px solid;
+    border-radius: 20px;
     padding: .5vh;
+    margin-left: 2vh;
+    margin-right: 2vh;
+    transition: all ease .3s;
+}
+#routine_btns li:hover {
+    box-shadow: 5px 5px 5px var(--pointer--color);
 }
 .routines #routine_contents_margin {
     padding-top: 11vh;
@@ -319,8 +367,9 @@ ul {
     top:0;
     display: flex;
     width: 100%;
-    background-color: cornflowerblue;
-    font-size: 3vh;
+    background-color: var(--header--color);
+    font-size: 3vh;    
+    justify-content: space-between;
 }
 #settingBox {
     margin: 3vh;
@@ -335,7 +384,6 @@ ul {
     border-bottom: 1px solid;
 }
 #setting_header li {
-    flex: 1;
     padding: 2vh;
 }
 .settingBtn {
@@ -439,7 +487,7 @@ ul {
     border: 1px solid;
     margin-bottom: 0.3vh ;
     border-radius: 30%;
-    box-shadow: 1px 1px 1px white;
+    box-shadow: 1px 1px 1px var(--font--color);
     transition: all ease .01s;
 }
 .spreadDetail-on div span:active{
@@ -471,7 +519,6 @@ ul {
     text-align: center;
     height: 9vh;
     position: inherit;
-    border-bottom: 2px solid;
     line-height: 9vh;
     font-size: 3vh;
     font-weight: bolder;
@@ -513,10 +560,7 @@ ul {
     border-left: 1px solid gray;
     border-right: 1px solid gray;
 }
-.exist {
-    /* color change */
-    background-color: blueviolet;
-}
+
 #calendar .routine_remove {
     display: inline;
     position: static;
@@ -534,7 +578,7 @@ ul {
     align-items: center;
 }
 #calendarDetailCover {
-    width: 40vw;
+    width: 30vh;
     height: 10vh;
     text-align: center;
     font-weight: bolder;
@@ -545,11 +589,6 @@ ul {
     width: 100%;
 }
 
-
-#selected {
-    color: red;
-    text-decoration-line: underline;
-}
 
 .spreadDetail-on {
     display: flex;
@@ -565,8 +604,9 @@ ul {
     position: absolute;
     bottom: 0;
     width: 100%;
-    font-size: large;
+    font-size: 3vh;
     font-weight: bolder;
+    height: 9vh;
 }
 
 .bottom_menu ul {
@@ -574,14 +614,37 @@ ul {
 }
 .bottom_menu li {
     display: inline-block;
-    background-color: black;
     width: 33%;
     text-align: center;
+    border-radius: 30px;
     margin:10px;
-    transition: background-color 0.5s;
+    transition: background-color .3s;
 }
 
 .bottom_menu .active {
     background-color: var(--pointer--color);
-    border-radius: 20px;
+}
+.bottom_menu li:hover{
+    background-color: var(--background--color);
+}
+
+
+.exist {
+    background-color: blueviolet;
+}
+#selected {
+    color: red;
+    text-decoration-line: underline;
+}
+
+
+.nextMonth, .prevMonth, .nonexist, .timer, #contents_guide,#setting_center,#routineNameSpan,
+#routines_header, #calendar_header, #currentDate, #detail_body:hover{
+    cursor: default;
+}
+.exist, .dateToggle, .clickable, #adjustBtn, #workout_text,#clickable,#mainpageMenu,#routineMenu,#calendarMenu,
+#startButton, #cancelButton, #tempStop, #endWorkout,#addWorkout,
+.routine_remove, .routine_adjust, .routine_start, #setting_save,#setting_cancel,
+#add_routine:hover {
+    cursor: pointer;
 }

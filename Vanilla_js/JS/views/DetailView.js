@@ -52,11 +52,11 @@ DetailView.getDetailHtml = function () {
     <span class = ${this.selectedToggleBottom === "SAME ALL" ? "none" : "detail"}>SET ${index + 1}</span>
     <input id = "weight" class= ${this.selectedToggleTop === "W,C" ? "detail" : "none"} value=${item[0]} type="number"> ${this.selectedToggleTop === "W,C" ? 'kg' : ' '}
     <input id = "count" value=${item[1]} type="number" min="1" max="100"> ${this.selectedToggleTop === "W,C" ? '개' : ' '}
-    <span class=${this.selectedToggleTop === "Only C" ? "detail" : "none"}> 개</span>
+    <span class=${this.selectedToggleTop === "Only Count" ? "detail" : "none"}> 개</span>
     ${(this.selectedToggleTop === "W,C") ?
      "<div class =${this.selectedToggleTop === 'W,C' ? 'detail' : 'none'}><span class='a'>+5</span><span class='b'>-5</span><span class='c'>+1</span><span class='d'>-1</span></div>"
       : ''}
-    <span class=${this.selectedToggleTop === "Only T" ? "detail" : "none"}> Min </span>
+    <span class=${this.selectedToggleTop === "Only Time" ? "detail" : "none"}> Min </span>
     </div>`
     return html
   }, `<div id = "detail_body">
@@ -65,7 +65,7 @@ DetailView.getDetailHtml = function () {
   <div>세트수와 세트별 개수 <br>그리고 무게를 알려주세요</div></div>
   <div id = 'detailSetBox'><input id='setCount' value = ${this.data.routine.item.length} type="number" min="1" max="100"> SET</div>
   <ul id = "detailToggle">
-  <li class = 'toggleTop'><span class>W,C</span><span class>Only C</span><span class>Only T</span></li>
+  <li class = 'toggleTop'><span class>W,C</span><span class>Only Count</span><span class>Only Time</span></li>
   <li class = 'toggleBottom'><span class>SAME ALL</span><span>EACH</span></li>
   </ul>
   <div id ="detailData">
@@ -172,12 +172,12 @@ DetailView.onCancel = function (e) {
 
 DetailView.datahandling = function () {
   event.stopPropagation()
-  if (this.data.routine.selectedToggleTop === 'Only C') {
+  if (this.data.routine.selectedToggleTop === 'Only Count') {
     this.data.routine.item.map(x => {
       x.push('Reps')
       x[0] = 0
     })
-  } else if (this.data.routine.selectedToggleTop === 'Only T') {
+  } else if (this.data.routine.selectedToggleTop === 'Only Time') {
     this.data.routine.item.map(x => {
       x.push('Minutes')
       x[0] = 0
