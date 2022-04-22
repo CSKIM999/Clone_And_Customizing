@@ -155,6 +155,7 @@ export default {
       WorkoutView.hide()
       ContentsView.hide()
       SettingView.hide()
+      DetailView.hide()
       RoutineView.hide()
       TimerView.hide()
       MenuView.show()

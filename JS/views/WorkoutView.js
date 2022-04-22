@@ -97,7 +97,7 @@ WorkoutView.onStart = function () {
   this.el.querySelector('#startButton').parentElement.className = 'none'
   this.el.querySelector('#stopBtns').className = 'detail'
   const ani__target = this.el.querySelector('#workoutContents')
-  ani__target.style.animation = "brr ease .7s"
+  ani__target.style.animation = "brr ease-out .7s"
   this.startToggle = false
   this.emit('@start', {})
 }
