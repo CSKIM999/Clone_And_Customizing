@@ -60,24 +60,45 @@ CalendarView.getCalendarHTML = function (fromDay, nowDay) {
   const beforeDay = fromDay.getDay()
   const afterDate = nowDay.getDate()
   const afterDay = nowDay.getDay()
-  let returnHTML = `<ul><li class = "calendarColumn">`
+  let returnHTML = `<ul><li class = "calendarColumn" id='calendarDay'>
+  <div class = 'sun'>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div class='sat'>SAT</div></li>
+  <li class = "calendarColumn">`
   let count = 1
 
   for (let i = beforeDate - beforeDay; beforeDay < 6 ? i <= beforeDate : 0; i++ && count++) {
-    returnHTML += '<div data-keyword = ' + (count - 1) + ' class = "prevMonth">' + i + '</div>'
+    if ((count-1)%7 === 0) {
+      returnHTML += '<div data-keyword = ' + (count - 1) + ' class = "prevMonth sun">' + i + '</div>'
+    } else {
+      returnHTML += '<div data-keyword = ' + (count - 1) + ' class = "prevMonth">' + i + '</div>'
+    }
     count % 7 == 0 ? returnHTML += '</li><li class = "calendarColumn">' : ''
   }
   for (let i = 1; i <= afterDate; i++ && count++) {
     const histCheckpoint = this.histData ? (this.histData.indexOf(i) >= 0 ? "exist" : "nonexist") : "nonexist"
     const idCheck = this.selectedDay == i ? "selected" : ""
-    returnHTML += '<div data-keyword = ' + (count - 1) + ' class = ' + histCheckpoint + ' id = ' + idCheck + '>' + i + '</div>'
+    const histCheckpointSun = "sun " + histCheckpoint
+    const histCheckpointSat = "sat " + histCheckpoint
+    if ((count-1)%7 === 0) {
+      returnHTML += '<div data-keyword = ' + (count - 1) + ' class = "' + histCheckpointSun + '" id = ' + idCheck + '>' + i + '</div>'
+    } else if ((count-1)%7 === 6){
+      returnHTML += '<div data-keyword = ' + (count - 1) + ' class = "' + histCheckpointSat + '" id = ' + idCheck + '>' + i + '</div>'
+    } else {
+      returnHTML += '<div data-keyword = ' + (count - 1) + ' class = "' + histCheckpoint + '" id = ' + idCheck + '>' + i + '</div>'
+    }
     if (count===35 && i>=afterDate) {
       break
     }
     count % 7 == 0 ? returnHTML += '</li><li class = "calendarColumn">' : ''
   }
   for (let i = 1; i < 7 - afterDay; i++ && count++) {
-    returnHTML += '<div data-keyword = ' + (count - 1) + ' class = "nextMonth">' + i + '</div>'
+    // returnHTML += '<div data-keyword = ' + (count - 1) + ' class = "nextMonth">' + i + '</div>'
+    if ((count-1)%7 === 0) {
+      returnHTML += '<div data-keyword = ' + (count - 1) + ' class = "nextMonth sun">' + i + '</div>'
+    } else if ((count-1)%7 === 6) {
+      returnHTML += '<div data-keyword = ' + (count - 1) + ' class = "nextMonth sat">' + i + '</div>'
+    } else{
+      returnHTML += '<div data-keyword = ' + (count - 1) + ' class = "nextMonth">' + i + '</div>'
+    }
     // count % 7 == 0 ? returnHTML += '</li><li class = "calendarColumn">' : ''
   }
   return returnHTML + '</ul></div>'
@@ -119,7 +140,7 @@ CalendarView.bindClickEvent = function () {
 
 CalendarView.onClickDate = function (e) {
   event.stopImmediatePropagation()
-  if (e.className === 'exist') {
+  if (e.classList.contains('exist')) {
     const callYear = this.currentYear
     const callMonth = this.currentMonth + 1
     this.emit('@get', { callYear, callMonth, e })

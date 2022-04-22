@@ -158,11 +158,12 @@
 }
 
 :root {
-    --header--color : rgb(15, 76, 117);
-    --background--color  : rgb(27, 38, 44);
-    --font--color : rgb(187, 225, 250);
-    --detail--color : rgb(50, 130, 184);
-    --pointer--color : rgb(100,100,100);
+    
+    --header--color : #0D0D0D;
+    --background--color  : #3841F2;
+    --font--color : #BFBFBF;
+    --detail--color : #797FF2;
+    --pointer--color : #363ED9;
 }
 body {
     display: flex;
@@ -266,11 +267,13 @@ ul {
     padding: 1vh;
 }
 #startButton {
-    color: var(--pointer--color);
+    color: var(--header--color);
+    font-weight: bolder;
 }
 
 #cancelButton {
-    color: red
+    color: red;
+    font-weight: bolder;
 }
 #adjustBtn {
     margin-left: 1vh;
@@ -301,7 +304,6 @@ ul {
     display: flex;
     justify-content: space-between;
     padding-bottom: 2vh;
-    padding-left: 2vh;
 }
 #routine_btns {
     margin-top: 2vh;
@@ -337,6 +339,7 @@ ul {
 }
 #routine_btns li:hover {
     box-shadow: 5px 5px 5px var(--pointer--color);
+    transform: translateX(-2px)
 }
 .routines #routine_contents_margin {
     padding-top: 11vh;
@@ -399,7 +402,7 @@ ul {
     border: 1px solid;
     border-radius: 10%;
     background-color: var(--header--color);
-    transition: background-color 1s;
+    transition: background-color .5s;
 }
 .settingBtn span:hover {
     background-color: var(--background--color);
@@ -443,7 +446,7 @@ ul {
 }
 
 #detailToggle .on {
-    background-color: var(--pointer--color);
+    background-color: var(--header--color);
 }
 #detailToggle .off {
     background-color: var(--background--color);
@@ -533,6 +536,10 @@ ul {
 }
 .calendarToggle span{
     padding: 1vh;
+    transition: all ease .3s;
+}
+.calendarToggle span:hover{
+    transform: translateY(-3px);
 }
 #calendarBody {
     border-bottom: 1px solid;
@@ -568,9 +575,11 @@ ul {
     padding-right: 1vh;
     padding-left: 1vh;
     border: 1px solid;
+    border-radius: 10px;
+    transition: all ease .3s;
 }
 #calendar .routine_remove:hover {
-    cursor: pointer;
+    box-shadow: 5px 5px 5px var(--pointer--color);
 }
 #calendarBottom {
     display: flex;
@@ -588,7 +597,9 @@ ul {
 #calendarDetail {
     width: 100%;
 }
-
+#calendarDetail .clickable{
+    margin-bottom: 1vh;
+}
 
 .spreadDetail-on {
     display: flex;
@@ -630,11 +641,19 @@ ul {
 
 
 .exist {
-    background-color: blueviolet;
+    background-color: var(--header--color);
+    border-radius: 5vh;
+    transform: scale(0.7);
 }
 #selected {
-    color: red;
+    color: #05F258;
     text-decoration-line: underline;
+}
+.sun {
+    color: #F20505;
+}
+.sat {
+    color: #401E1E;
 }
 
 
