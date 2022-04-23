@@ -92,7 +92,6 @@ SettingView.onSave = function (e) {
 
 SettingView.activeSettingDetail = function (e) {
   Array.from(this.el.querySelectorAll('#routine_contents ul')).forEach(ul => {
-    // ul.parentElement.parentElement.dataset['keyword'] === e ? (ul.className == 'none' ? ul.className = 'detail' : ul.className = 'none') : false
     if (ul.parentElement.parentElement.dataset['keyword'] === e) {
       if (ul.classList.contains('none')) {
         ul.classList.replace('none','detail') 
@@ -136,20 +135,6 @@ SettingView.onCancel = function (e) {
 SettingView.viewOut = function(data,SaveOrCancel=false) {
   const ani__target = this.el
   ani__target.style.animation = "slideDown 0.3s forwards"
-  
-  // ani__target.classList.replace('ani__run','ani__end')
-  // if (SaveOrCancel) {
-  //   ani__target.addEventListener('animationend', e=> {
-  //     if (ani__target.classList.contains('ani__run')) {
-  //       return
-  //     } else{
-  //       this.onSave(e)
-  //     }
-  //   })
-  // } else{
-  //   ani__target.addEventListener('animationend', e=> this.onCancel(e))
-  // }
-
   if (SaveOrCancel) {
     ani__target.addEventListener('animationend', e=> this.onSave(e))
   } else{

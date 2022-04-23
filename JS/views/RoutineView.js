@@ -28,9 +28,7 @@ RoutineView.render = function (data = []) {
 
 RoutineView.noData = function () {
   return "<div class ='routines' id = 'routines_header'>My-Routines</div>"
-    // + "<ul></li>"
-    // + "<li>My-Routines</li></ul></div>"
-    + "<ul id = 'routine_contents_margin'><li><span id = 'add_routine'>루틴추가</span>"
+    + "<ul id = 'routine_contents_margin'><li>"
     + "<div class = 'noRoutine' >아직 루틴이 없습니다 루틴을 추가해보세요!</div>"
     + "<span class = 'noRoutine' id = 'add_routine'>+ 루틴 추가 +</span>"
     + '</ul.>'
@@ -48,8 +46,6 @@ RoutineView.getRoutineHtml = function (data) {
     <li class="routine_start">START</li></ul></li>`
     return html
   }, "<div class ='routines' id = 'routines_header'>My-Routines</div>"
-  // + "<ul>"
-  // + "<li>My-Routines</li></ul></div>"
   + "<ul id = 'routine_contents_margin'><li><span id = 'add_routine'>+ 루틴추가 +</span></li>") + '</ul.>'
 }
 RoutineView.spreadItem = function (data = []) {
@@ -63,7 +59,6 @@ RoutineView.spreadItem = function (data = []) {
 RoutineView.activeRoutineDetail = function (routineIndex) {
   this.show()
   Array.from(this.el.querySelectorAll('.routines #routine_detail ul')).forEach(ul => {
-    // li.parentElement.dataset['keyword'] == routineIndex ? (li.className == 'none' ? li.className = 'detail' : li.className = 'none') : false
     if (ul.parentElement.parentElement.parentElement.dataset['keyword'] === routineIndex) {
       if (ul.parentElement.classList.contains('none')) {
         ul.parentElement.classList.replace('none','detail') 
@@ -121,7 +116,6 @@ RoutineView.onClick = function (e) {
 
 RoutineView.viewOut = function(leftOrRight = false) {
   const ani__target = this.el.querySelector('#routine_contents_margin')
-  // ani__target.classList.contains('ani__run') ? '' : console.error(tag);
   if (leftOrRight) {
     ani__target.style.animation = "slideOutRight 0.2s forwards"
   } else{

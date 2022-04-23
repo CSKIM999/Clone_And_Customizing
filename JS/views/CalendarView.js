@@ -91,7 +91,6 @@ CalendarView.getCalendarHTML = function (fromDay, nowDay) {
     count % 7 == 0 ? returnHTML += '</li><li class = "calendarColumn">' : ''
   }
   for (let i = 1; i < 7 - afterDay; i++ && count++) {
-    // returnHTML += '<div data-keyword = ' + (count - 1) + ' class = "nextMonth">' + i + '</div>'
     if ((count-1)%7 === 0) {
       returnHTML += '<div data-keyword = ' + (count - 1) + ' class = "nextMonth sun">' + i + '</div>'
     } else if ((count-1)%7 === 6) {
@@ -99,7 +98,6 @@ CalendarView.getCalendarHTML = function (fromDay, nowDay) {
     } else{
       returnHTML += '<div data-keyword = ' + (count - 1) + ' class = "nextMonth">' + i + '</div>'
     }
-    // count % 7 == 0 ? returnHTML += '</li><li class = "calendarColumn">' : ''
   }
   return returnHTML + '</ul></div>'
 }
@@ -212,7 +210,6 @@ CalendarView.onRemoveHistory = function (e) {
 CalendarView.viewOut = function() {
   this.el.querySelectorAll('#calendarBottom div').forEach(div => div.className = 'none')
   const ani__target = this.el.querySelector('#calendarTop')
-  // ani__target.classList.contains('ani__run') ? '' : console.error(tag);
   ani__target.style.animation = "slideOutRight 0.2s forwards"
 }
 

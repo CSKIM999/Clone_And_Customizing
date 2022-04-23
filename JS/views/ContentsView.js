@@ -76,8 +76,6 @@ ContentsView.activeRoutineDetail = function (e) {
       li.style.transition = '0.5s ease'
 
     }
-    // li.style.animation='dissapear 0.5s ease forwards'
-    // li.parentElement.parentElement.parentElement.style.animation = 'dragDown 1s ease'
   })
 }
 
@@ -103,7 +101,6 @@ ContentsView.onClick = function (e) {
 
 ContentsView.viewOut = function() {
   const ani__target = this.el
-  // ani__target.classList.contains('ani__run') ? '' : console.error(tag);
   ani__target.style.animation = "slideOutLeft 0.2s forwards"
 }
 export default ContentsView

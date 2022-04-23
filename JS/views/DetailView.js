@@ -190,7 +190,6 @@ DetailView.datahandling = function () {
 }
 
 DetailView.onSaveDetail = function (e) {
-  console.log('onsave')
   event.stopImmediatePropagation()
   if (e.animationName !== 'slideDown') {
     return
@@ -203,7 +202,6 @@ DetailView.onSaveDetail = function (e) {
 }
 
 DetailView.onAdjDetail = function (e) {
-  console.log('onadj')
   event.stopImmediatePropagation()
   if (e.animationName !== 'slideDown') {
     return
@@ -217,7 +215,6 @@ DetailView.onAdjDetail = function (e) {
 }
 
 DetailView.viewOut = function(SaveOrCancel) {
-  console.log(SaveOrCancel)
   event.stopImmediatePropagation()
   if (SaveOrCancel=== true && this.data.name === '') {
     alert('운동 이름을 입력해주세요')
@@ -225,7 +222,6 @@ DetailView.viewOut = function(SaveOrCancel) {
   }
   const ani__target = this.el
   ani__target.style.animation = "slideDown 0.3s forwards"
-  // ani__target.classList.contains('ani__run') ? '' : console.error(tag);
   if (SaveOrCancel) {
     ani__target.addEventListener('animationend', e=> {
       isNaN(this.checkAdjust) ? this.onSaveDetail(e) : this.onAdjDetail(e)

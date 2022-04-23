@@ -167,7 +167,6 @@ WorkoutView.onClick = function (e) {
     } else if (+span.dataset.keyword > count+1) {
       span.className =''
     }
-    // span.className = span.dataset.keyword <= count ? 'done' : ''
   })
 
 

@@ -101,12 +101,6 @@ export default {
       this.menuHist === 'MAINPAGE' ? ContentsView.viewOut(true) : CalendarView.viewOut()
     } else {
       this.menuHist === 'ROUTINE' ? RoutineView.viewOut(true) : ContentsView.viewOut()
-      // try {
-      //   RoutineView.viewOut(false)
-      // } catch{
-      //   ContentsView.viewOut()
-      // }
-
     }
     this.renderMenu(true)
   },
@@ -151,7 +145,7 @@ export default {
 
   fetchCalendar() {
     HistoryModel.list().then(data => {
-      const DataForRender = this.getHistoryData(data) // [9,10,21,30] Array 형식 key값 반환
+      const DataForRender = this.getHistoryData(data)
       WorkoutView.hide()
       ContentsView.hide()
       SettingView.hide()
@@ -333,14 +327,4 @@ export default {
     this.giveHistoryData({ callYear: RYear, callMonth: RMonth, e: RDay })
   },
 
-  // animateControll(fromView) {
-  //   const ani__target = document.querySelector('.ani__run')
-  //   ani__target.addEventListener('animationend',  e => { 
-  //     document.querySelector('.ani__run').classList.replace('ani__run','ani__end').then(fromView.viewOut())
-  //   })
-  // },
-  
-  check() {
-    debugger
-  }
 }
